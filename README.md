@@ -4,7 +4,7 @@ A Netflix-inspired web application that lets users search for movies and shows, 
 
 Built using HTML, CSS, and JavaScript, powered by the TVMaze for live movie/show data and localStorage for saving favourites.
 
-✨ Features
+ Features
 🔎 Movie Search Engine
 Search movies and TV shows in real time
 Powered by TVMaze API
@@ -69,19 +69,6 @@ Provides:
 Show search
 Metadata (title, image, genres, etc.)
 Lightweight JSON responses
-
-🎯 Future Improvements
-Add user authentication system
-Cloud-based favourites sync
-Trailer integration (YouTube API)
-Better recommendation engine
-Multiplayer quiz mode
-PWA (installable app version)
-
-Home page (search + results)
-Genre explorer
-Cinema mode
-Guessing game UI
 
 👨‍💻 Author
 Ammara Badat
