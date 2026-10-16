@@ -27,14 +27,36 @@
         return mp4s.sort((a, b) => score(b) - score(a))[0] || null;
     }
 
+    // Guess a readable language name from a subtitle file name.
+    const LANGS = [
+        [/(^|[^a-z])(en|eng|english)([^a-z]|$)/i, "en", "English"], [/(^|[^a-z])(es|spa|spanish|espanol)([^a-z]|$)/i, "es", "Español"],
+        [/(^|[^a-z])(fr|fre|fra|french)([^a-z]|$)/i, "fr", "Français"], [/(^|[^a-z])(de|ger|deu|german)([^a-z]|$)/i, "de", "Deutsch"],
+        [/(^|[^a-z])(pt|por|portuguese)([^a-z]|$)/i, "pt", "Português"], [/(^|[^a-z])(it|ita|italian)([^a-z]|$)/i, "it", "Italiano"],
+        [/(^|[^a-z])(nl|dut|dutch)([^a-z]|$)/i, "nl", "Nederlands"], [/(^|[^a-z])(ru|rus|russian)([^a-z]|$)/i, "ru", "Русский"],
+        [/(^|[^a-z])(ja|jp|jpn|japanese)([^a-z]|$)/i, "ja", "日本語"], [/(^|[^a-z])(zh|chi|chs|cht|chinese)([^a-z]|$)/i, "zh", "中文"]
+    ];
+    function subtitleTrack(identifier, name) {
+        const base = name.replace(/\.(srt|vtt)$/i, "");
+        const hit = LANGS.find(([re]) => re.test(base));
+        return {
+            lang: hit ? hit[1] : "und",
+            label: hit ? hit[2] : `Subtitles (${base.length > 24 ? base.slice(0, 22) + "…" : base})`,
+            url: `${BASE}/download/${encodeURIComponent(identifier)}/${name.split("/").map(encodeURIComponent).join("/")}`
+        };
+    }
+
     async function tryItem(identifier, film) {
         try {
             const meta = await getJson(`${BASE}/metadata/${encodeURIComponent(identifier)}`);
             if (!meta?.files || meta.is_dark) return null;
             const file = bestFile(meta.files, film);
             if (!file) return null;
+            const subtitles = meta.files
+                .filter(f => /\.(srt|vtt)$/i.test(f.name))
+                .map(f => subtitleTrack(identifier, f.name));
             return {
                 identifier,
+                subtitles,
                 url: `${BASE}/download/${encodeURIComponent(identifier)}/${file.name.split("/").map(encodeURIComponent).join("/")}`,
                 poster: `${BASE}/services/img/${encodeURIComponent(identifier)}`,
                 page: `${BASE}/details/${encodeURIComponent(identifier)}`
@@ -44,24 +66,34 @@
         }
     }
 
-    async function searchIds(film, withYear) {
-        const title = film.title.replace(/[":()]/g, " ").replace(/\s+/g, " ").trim();
+    // The Archive's curated film collections: searched first so a generic
+    // title like "Summer" doesn't match a random home video.
+    const FILM_COLLECTIONS = "feature_films OR classic_cartoons OR film_noir OR silent_films OR SciFi_Horror OR Comedy_Films OR classic_tv OR prelinger OR opensource_movies OR animationandcartoons OR publicdomainmovies";
+
+    async function searchIds(film, withYear, curated) {
+        const title = film.title.replace(/[":()!?.,']/g, " ").replace(/\s+/g, " ").trim();
         let q = `title:(${title}) AND mediatype:(movies) AND NOT title:(trailer)`;
         if (withYear) q += ` AND year:[${film.year - 1} TO ${film.year + 1}]`;
+        if (curated) q += ` AND collection:(${FILM_COLLECTIONS})`;
         const url = `${BASE}/advancedsearch.php?q=${encodeURIComponent(q)}&fl[]=identifier&sort[]=downloads+desc&rows=8&output=json`;
         const data = await getJson(url);
         return (data.response?.docs || []).map(d => d.identifier);
     }
 
     async function resolve(film) {
+        // Films hosted by their makers (e.g. Blender) play straight from there.
+        if (film.direct) {
+            return Promise.resolve({ identifier: null, url: film.direct, poster: null, page: film.direct.replace(/[^/]+$/, ""), subtitles: film.subtitles || [] });
+        }
         return cached(`archive:${film.id}`, 30, async () => {
             for (const id of film.archiveIds || []) {
                 const hit = await tryItem(id, film);
                 if (hit) return hit;
             }
-            for (const withYear of [true, false]) {
+            // Curated collections with the year, then any film with the year, then curated without.
+            for (const [withYear, curated] of [[true, true], [true, false], [false, true]]) {
                 let ids = [];
-                try { ids = await searchIds(film, withYear); } catch { /* try next */ }
+                try { ids = await searchIds(film, withYear, curated); } catch { /* try next */ }
                 for (const id of ids.slice(0, 5)) {
                     const hit = await tryItem(id, film);
                     if (hit) return hit;
