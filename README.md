@@ -6,7 +6,7 @@
 
 **A Netflix-style streaming experience built with nothing but HTML, CSS and JavaScript.**
 
-Browse TV and movies, stream legendary films for free, find what's free to watch in your country, track your episodes and host watch parties.
+Browse TV, movies and anime, stream legendary films for free, find what's free to watch in your country, track your episodes and host watch parties.
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
@@ -23,7 +23,7 @@ Browse TV and movies, stream legendary films for free, find what's free to watch
 
 ## Overview
 
-MYFLIX recreates the feel of a modern streaming service in the browser, with no frameworks, bundlers or backend. It brings together six public data sources into one interface:
+MYFLIX recreates the feel of a modern streaming service in the browser, with no frameworks, bundlers or backend. It brings together ten public data sources into one interface:
 
 | Source | Role | Key |
 |---|---|---|
@@ -31,6 +31,10 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
 | [TMDB](https://www.themoviedb.org/) | Movies, trailers, backdrops, streaming availability per country | Free |
 | [OMDb](https://www.omdbapi.com/) | IMDb, Rotten Tomatoes and Metacritic scores | Free |
 | [Wikipedia](https://www.wikipedia.org/) | "Did you know?" facts, film posters, trivia questions | Not needed |
+| [AniList](https://anilist.co) | Anime: trending, seasonal, airing schedule, characters, official streaming links | Not needed |
+| [Jikan](https://jikan.moe) (MyAnimeList) | MyAnimeList scores, rankings and the all-time popular list | Not needed |
+| [Trakt](https://trakt.tv) | What people are watching right now, most anticipated titles | Free |
+| [fanart.tv](https://fanart.tv) | Transparent title logos for hero banners | Free |
 | [Internet Archive](https://archive.org/details/feature_films) | Public-domain films streamed inside the app | Not needed |
 | [PeerJS](https://peerjs.com/) | Peer-to-peer connections for watch parties | Not needed |
 
@@ -39,7 +43,9 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
 ### Browsing
 - Hero billboard, Top 10 rows with outlined rank numbers, and hover preview cards
 - "More Info" pop-up and an expanding search box
-- Dedicated pages for TV Shows, Movies, Watch Free, My List and Games, each with genre filters
+- Dedicated pages for TV Shows, Movies, Anime, Watch Free, My List and Games, each with genre filters
+- **Trending Today** rows from Trakt, showing how many people are watching each title right now
+- **Title logos** from fanart.tv on hero banners and in the More Info pop-up, like Netflix
 - Mobile bottom tab bar
 - Light and dark themes, with consistent line iconography throughout
 
@@ -52,6 +58,15 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
 - **Free in your country**: rows of movies and shows that are free (or free with ads) where you live, grouped by service. The data is live from JustWatch via TMDB.
 - **Watch free on…**: every title's pop-up links straight to services that carry it for free, such as Tubi, Plex, YouTube, The Roku Channel and Rakuten Viki.
 - **Free streaming directory**: Tubi, Pluto TV, Plex, The Roku Channel, Crackle, YouTube Movies & TV, Kanopy and Rakuten Viki, each marked as available or not in your country.
+
+### Anime
+- **Rows**: Top 10 today, this season, new episodes this week with airing countdowns, highest rated, anime movies, next season, and genre rows that load as you scroll
+- **Rankings**: an all-time "Top on MyAnimeList" row, from Jikan
+- **More Info pop-up**:
+  - Characters with their Japanese voice actors
+  - AniList and MyAnimeList scores, studio, source material and trailer
+  - Official streaming links (Crunchyroll, Netflix and others) and recommendations
+- **Search**: anime results appear in search too
 
 ### Title details
 - Cast, trailer, and scores from TVMaze, TMDB, IMDb, Rotten Tomatoes and Metacritic
@@ -107,16 +122,18 @@ python3 -m http.server 8000   # then visit http://localhost:8000
 
 ## Configuration
 
-MYFLIX works without any keys. Two optional free keys unlock more:
+MYFLIX works without any keys, including the Anime page. Four optional free keys unlock more:
 
 | Key | Unlocks | Where to get it |
 |---|---|---|
 | TMDB | Movies page, trailers, free-in-your-country rows, where to watch | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) |
 | OMDb | IMDb, Rotten Tomatoes and Metacritic scores | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) |
+| Trakt (Client ID) | Trending Today and Most Anticipated rows | [trakt.tv/oauth/applications](https://trakt.tv/oauth/applications). Create an app with redirect URI `urn:ietf:wg:oauth:2.0:oob` |
+| fanart.tv | Title logos on banners | [fanart.tv/get-an-api-key](https://fanart.tv/get-an-api-key/) |
 
 **There are two ways to add them:**
 - **Per user (recommended):** open **Profile → Settings & API keys** and paste the keys. They are stored only in that browser.
-- **For every visitor:** set `tmdbApiKey` / `omdbApiKey` in [`js/config.js`](js/config.js). This exposes the keys publicly, so only use keys you are comfortable sharing.
+- **For every visitor:** set `tmdbApiKey`, `omdbApiKey`, `traktClientId` or `fanartApiKey` in [`js/config.js`](js/config.js). This exposes the keys publicly, so only use keys you are comfortable sharing.
 
 The *Where to watch* country defaults to South Africa (`ZA`). You can change it in Settings or in `js/config.js`.
 
@@ -126,14 +143,15 @@ The *Where to watch* country defaults to South Africa (`ZA`). You can change it 
 flowchart LR
     UI["Pages & UI<br/>(router, cards, modal, player)"] --> Store["store.js<br/>localStorage"]
     UI --> Models["models.js<br/>one shape for every title"]
-    Models --> TVMaze & TMDB & Archive["Internet Archive"]
-    UI --> OMDb & Wiki["Wikipedia"]
+    Models --> TVMaze & TMDB & AniList & Archive["Internet Archive"]
+    UI --> OMDb & Wiki["Wikipedia"] & Jikan & Trakt & Fanart["fanart.tv"]
     UI --> Party["party.js"] --> PeerJS
 ```
 
 - **No build step.** Scripts are plain deferred `<script>` files sharing one `MyFlix` namespace, so the app runs straight from disk. The script order in `index.html` matters.
-- **One title model.** TVMaze shows, TMDB movies and classic films are normalised into the same shape, so every card, row and pop-up works with any source.
-- **Hash routing.** `#/`, `#/tv`, `#/movies`, `#/classics`, `#/my-list`, `#/games`, `#/stats`, `#/search?q=` and `#/party/CODE`.
+- **One title model.** TVMaze shows, TMDB movies, AniList anime and classic films are normalised into the same shape, so every card, row and pop-up works with any source.
+- **Rate-limit friendly.** The Anime page fetches six rows in one AniList GraphQL request, genre rows load only when scrolled into view, and Jikan calls are queued.
+- **Hash routing.** `#/`, `#/tv`, `#/movies`, `#/anime`, `#/classics`, `#/my-list`, `#/games`, `#/stats`, `#/search?q=` and `#/party/CODE`.
 - **Caching.** Slow lookups (Wikipedia, Internet Archive, OMDb) are cached in `localStorage`. The service worker caches the app shell and artwork.
 - **Resilient playback.** For each classic film, `api/archive.js` tries known Internet Archive items first, then searches by title and year, then picks the best MP4. The result is remembered for 30 days.
 
@@ -162,9 +180,9 @@ myflix/
     ├── utils.js            Helpers: escaping, caching, formatting, toast
     ├── store.js            Saved data: list, episodes, progress, history, settings
     ├── models.js           Normalises TVMaze / TMDB / classic titles
-    ├── api/                tvmaze · tmdb · omdb · wiki · archive
+    ├── api/                tvmaze · tmdb · omdb · wiki · archive · anilist · jikan · trakt · fanart
     ├── ui/                 cards · billboard · details · player · mood · settings
-    ├── pages/              helpers · browse · library · games
+    ├── pages/              helpers · browse · anime · library · games
     ├── party.js            Watch party
     ├── recommend.js        Recommendations
     ├── tracker.js          Up next and new-episode notifications
@@ -200,6 +218,7 @@ Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. Wat
 - [ ] Optional cloud sync for My List and the episode tracker
 - [ ] Subtitles for classic films where the Internet Archive provides them
 - [ ] Live TV channel guide
+- [ ] Anime episode tracker (AniList progress sync)
 
 ## Credits
 
@@ -207,6 +226,9 @@ Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. Wat
 - Movie data: [TMDB](https://www.themoviedb.org/). *This product uses the TMDB API but is not endorsed or certified by TMDB.*
 - Streaming availability: [JustWatch](https://www.justwatch.com/), via TMDB
 - Scores: [OMDb API](https://www.omdbapi.com/)
+- Anime: [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net) via [Jikan](https://jikan.moe)
+- Trending: [Trakt](https://trakt.tv)
+- Logos: [fanart.tv](https://fanart.tv)
 - Facts and posters: [Wikipedia](https://www.wikipedia.org/), licensed CC BY-SA
 - Films: [Internet Archive](https://archive.org/)
 - Icons: [Lucide](https://lucide.dev), ISC licence

@@ -81,6 +81,31 @@
         };
     }
 
+    // AniList anime -> MYFLIX title
+    function fromAnilist(a) {
+        return {
+            key: `anime:${a.id}`,
+            kind: "anime",
+            id: a.id,
+            name: a.title?.english || a.title?.romaji || "Untitled",
+            altName: a.title?.english && a.title.romaji !== a.title.english ? a.title.romaji : null,
+            year: a.seasonYear || a.startDate?.year || null,
+            poster: a.coverImage?.large || null,
+            posterLarge: a.coverImage?.extraLarge || a.coverImage?.large || null,
+            backdrop: a.bannerImage || null,
+            backdropLarge: a.bannerImage || null,
+            genres: a.genres || [],
+            rating: a.averageScore ? Math.round(a.averageScore) / 10 : null,
+            runtime: a.duration || null,
+            overview: stripHtml(a.description || "").replace(/\(Source:[^)]*\)/gi, "").trim(),
+            format: a.format, episodes: a.episodes, status: a.status,
+            nextAiring: a.nextAiringEpisode || null,
+            studio: a.studios?.nodes?.[0]?.name || null,
+            malId: a.idMal || null,
+            raw: a
+        };
+    }
+
     // Rebuild a full title from a saved My List item (which only keeps a few fields).
     function fromKey(key) {
         const [kind, id] = key.split(":");
@@ -91,5 +116,5 @@
         return MyFlix.store.list.get(key) || { key, kind, id: +id, name: "" };
     }
 
-    MyFlix.models = { fromTvmaze, fromTmdb, fromClassic, fromKey, tmdbImage, TMDB_GENRES };
+    MyFlix.models = { fromTvmaze, fromTmdb, fromClassic, fromAnilist, fromKey, tmdbImage, TMDB_GENRES };
 })(window.MyFlix = window.MyFlix || {});

@@ -3,7 +3,7 @@
 // ==========================
 // Bump CACHE_VERSION whenever you change any app file, so visitors get
 // the new version instead of the cached one.
-const CACHE_VERSION = "myflix-v4";
+const CACHE_VERSION = "myflix-v5";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
@@ -34,6 +34,10 @@ const APP_FILES = [
     "js/api/omdb.js",
     "js/api/wiki.js",
     "js/api/archive.js",
+    "js/api/anilist.js",
+    "js/api/jikan.js",
+    "js/api/trakt.js",
+    "js/api/fanart.js",
     "js/ui/cards.js",
     "js/ui/billboard.js",
     "js/ui/details.js",
@@ -47,6 +51,7 @@ const APP_FILES = [
     "js/pages/helpers.js",
     "js/pages/browse.js",
     "js/pages/library.js",
+    "js/pages/anime.js",
     "js/pages/games.js",
     "js/pwa.js",
     "js/main.js",
@@ -90,7 +95,7 @@ self.addEventListener("fetch", event => {
 
     // Posters, fonts and icons that never change: cache once, reuse.
     if (url.hostname.endsWith("tvmaze.com") || url.hostname === "image.tmdb.org" ||
-        url.hostname === "upload.wikimedia.org" || url.hostname.endsWith("fonts.gstatic.com") ||
+        url.hostname === "upload.wikimedia.org" || url.hostname === "s4.anilist.co" || url.hostname === "assets.fanart.tv" || url.hostname.endsWith("fonts.gstatic.com") ||
         url.hostname === "fonts.googleapis.com") {
         event.respondWith(cacheFirst(request, DATA_CACHE));
     }

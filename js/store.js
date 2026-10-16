@@ -36,7 +36,7 @@
     function getSetting(name) {
         if (settings[name]) return settings[name];
         const cfg = MyFlix.config || {};
-        return { tmdbKey: cfg.tmdbApiKey, omdbKey: cfg.omdbApiKey, region: cfg.defaultRegion, name: "" }[name] || "";
+        return { tmdbKey: cfg.tmdbApiKey, omdbKey: cfg.omdbApiKey, traktKey: cfg.traktClientId, fanartKey: cfg.fanartApiKey, region: cfg.defaultRegion, name: "" }[name] || "";
     }
     function setSetting(name, value) {
         settings[name] = typeof value === "string" ? value.trim() : value;

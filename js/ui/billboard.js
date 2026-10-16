@@ -54,6 +54,26 @@
             if (act === "list") MyFlix.actions.toggleList(title);
         };
         MyFlix.cards.refreshListButtons();
+        applyLogo(el.querySelector(".billboard-title"), title);
+    }
+
+    // Swap a plain-text title for a fanart.tv logo when one exists.
+    // The text stays for screen readers and shows again if the image fails.
+    function applyLogo(titleEl, t) {
+        if (!titleEl || !MyFlix.fanart.enabled()) return;
+        MyFlix.fanart.logoFor(t).then(url => {
+            if (!url || !titleEl.isConnected) return;
+            const img = new Image();
+            img.className = "title-logo";
+            img.alt = "";
+            img.onload = () => {
+                if (!titleEl.isConnected) return;
+                titleEl.classList.add("has-logo");
+                titleEl.innerHTML = `<span class="sr-only">${escapeHtml(t.name)}</span>`;
+                titleEl.prepend(img);
+            };
+            img.src = url;
+        }).catch(() => {});
     }
 
     function skeleton(el) {
@@ -61,5 +81,5 @@
         el.innerHTML = `<div class="billboard-media"><div class="billboard-vignette"></div></div>`;
     }
 
-    MyFlix.billboard = { render, skeleton };
+    MyFlix.billboard = { render, skeleton, applyLogo };
 })(window.MyFlix = window.MyFlix || {});

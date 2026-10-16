@@ -17,7 +17,8 @@
 
 /* On pages with a billboard the header floats over the image, like Netflix's "TV Shows ▾" */
 .view--tv > .page-header,
-.view--movies > .page-header {
+.view--movies > .page-header,
+.view--anime > .page-header {
     position: absolute;
     top: var(--nav-h);
     left: 0;
@@ -28,6 +29,7 @@
 
 .view--tv > .page-header:only-child,
 .view--movies > .page-header + .grid-page,
+.view--anime > .page-header + .grid-page,
 .view--tv > .page-header + .grid-page {
     padding-top: calc(var(--nav-h) + 80px);
 }
@@ -678,4 +680,8 @@
 
 .services-note {
     margin-top: 12px;
+}
+
+.page-credit {
+    padding: 24px var(--page-x) 0;
 }

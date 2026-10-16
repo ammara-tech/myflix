@@ -7,7 +7,7 @@
 
     // Find the Wikipedia article for a title.
     async function findPage(name, year, kind) {
-        const hint = kind === "tv" || kind === "tmdbtv" ? "TV series" : "film";
+        const hint = kind === "anime" ? "anime" : kind === "tv" || kind === "tmdbtv" ? "TV series" : "film";
         const q = `${name} ${year || ""} ${hint}`.trim();
         const data = await getJson(`${API}?action=query&list=search&srsearch=${encodeURIComponent(q)}&srlimit=5&format=json&origin=*`);
         const hits = data.query?.search || [];

@@ -8,6 +8,8 @@
         // Anything typed here is visible to everyone who views the site.
         tmdbApiKey: "",   // https://www.themoviedb.org/settings/api  (movies, trailers, where to watch)
         omdbApiKey: "",   // https://www.omdbapi.com/apikey.aspx        (IMDb, Rotten Tomatoes, Metacritic)
+        traktClientId: "", // https://trakt.tv/oauth/applications       (Trending Today rows)
+        fanartApiKey: "", // https://fanart.tv/get-an-api-key/         (title logos on banners)
 
         // Country used for "Where to watch" (ISO code). ZA = South Africa.
         defaultRegion: "ZA",

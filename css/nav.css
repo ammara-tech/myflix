@@ -333,7 +333,7 @@
     outline: none;
 }
 
-.view:not(.view--home):not(.view--tv):not(.view--movies):not(.view--classics) {
+.view:not(.view--home):not(.view--tv):not(.view--movies):not(.view--classics):not(.view--anime) {
     padding-top: calc(var(--nav-h) + 20px);
 }
 

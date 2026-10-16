@@ -167,13 +167,19 @@
             requestAnimationFrame(updateArrows);
         }
 
+        const start = () => opts.load().then(fill).catch(err => {
+            if (opts.hideIfEmpty) { row.classList.add("hidden"); return; }
+            track.innerHTML = `<p class="row-empty row-empty--error">${escapeHtml(err.code === "NO_KEY" ? err.message : "Couldn't load this row. Check your connection.")}</p>`;
+        });
+
         if (opts.items) fill(opts.items);
-        else if (opts.load) {
-            opts.load().then(fill).catch(err => {
-                if (opts.hideIfEmpty) { row.classList.add("hidden"); return; }
-                track.innerHTML = `<p class="row-empty row-empty--error">${escapeHtml(err.code === "NO_KEY" ? err.message : "Couldn't load this row. Check your connection.")}</p>`;
-            });
-        }
+        else if (opts.load && opts.lazy && "IntersectionObserver" in window) {
+            // Only fetch when the row is about to scroll into view (saves API calls).
+            const io = new IntersectionObserver(entries => {
+                if (entries.some(e => e.isIntersecting)) { io.disconnect(); start(); }
+            }, { rootMargin: "400px 0px" });
+            io.observe(row);
+        } else if (opts.load) start();
         row.fill = fill;
         return row;
     }
