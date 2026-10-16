@@ -884,3 +884,44 @@
         flex-wrap: wrap;
     }
 }
+
+/* ---------- provider links (open the service in a new tab) ---------- */
+a.provider {
+    color: var(--text);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+a.provider:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+}
+
+.provider-out {
+    width: 14px;
+    height: 14px;
+    color: var(--text-dim);
+}
+
+.provider--text {
+    padding: 6px 12px 6px 6px;
+}
+
+.service-dot {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 1rem;
+    background: var(--c);
+    color: var(--ink);
+}
+
+.btn .btn-out {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}

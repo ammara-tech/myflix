@@ -22,6 +22,7 @@
         const img = info.backdrop || t.backdropLarge || t.backdrop;
         const portrait = !img && (info.poster || t.posterLarge || t.poster);
         const playable = MyFlix.actions.canPlay(t);
+        const free = !playable && freeOption(t, info);
         const listItem = store.list.get(t.key);
         return `
             <div class="modal-hero ${portrait ? "modal-hero--portrait" : ""}">
@@ -35,7 +36,8 @@
                     <h2 id="modal-title" class="modal-title">${escapeHtml(t.name)}</h2>
                     <div class="modal-actions">
                         ${playable ? `<button type="button" class="btn btn--play" data-act="play">${icon("play")}<span>Play</span></button>` : ""}
-                        ${info.trailer ? `<button type="button" class="btn ${playable ? "btn--grey" : "btn--play"}" data-act="trailer">${icon("circle-play")}<span>Trailer</span></button>` : ""}
+                        ${free ? `<a class="btn btn--play" href="${escapeHtml(free.url)}" target="_blank" rel="noopener">${icon("play")}<span>Watch free on ${escapeHtml(free.name)}</span>${icon("external-link", "btn-out")}</a>` : ""}
+                        ${info.trailer ? `<button type="button" class="btn ${playable || free ? "btn--grey" : "btn--play"}" data-act="trailer">${icon("circle-play")}<span>Trailer</span></button>` : ""}
                         <button type="button" class="circle circle--lg" data-act="list" data-list-key="${escapeHtml(t.key)}" aria-label="My List">${icon(listItem ? "check" : "plus")}</button>
                         <button type="button" class="circle circle--lg ${listItem?.status === "watched" ? "is-on" : ""}" data-act="watched" aria-label="Mark as watched" title="Mark as watched">${icon("eye")}</button>
                         ${listItem?.status === "watched" ? starsHtml(listItem) : ""}
@@ -113,17 +115,44 @@
         if (t.kind === "classic") {
             return `<div class="provider-free">${icon("sparkles")}<div><strong>Free to watch right here</strong><span>Streamed from the Internet Archive · ${escapeHtml(t.licence)}</span></div></div>`;
         }
+        const searchFree = `
+            <div class="provider-group"><span class="label">Search free services</span><div class="provider-logos">
+                ${MyFlix.freeServices.filter(s => s.search).map(s => serviceChip(s, MyFlix.serviceLink(s, t.name))).join("")}
+            </div></div>`;
         if (!MyFlix.tmdb.enabled()) {
-            return `<p class="hint-line">${icon("key-round")} Add a free TMDB key in <button type="button" class="link" data-act="settings">Settings</button> to see which South African services stream this.</p>`;
+            return `<p class="hint-line">${icon("key-round")} Add a free TMDB key in <button type="button" class="link" data-act="settings">Settings</button> to see exactly which services stream this in your country.</p>${searchFree}`;
         }
-        if (!providers) return `<p class="muted">Not currently available to stream in ${escapeHtml(store.getSetting("region") || "ZA")}.</p>`;
+        if (!providers) return `<p class="muted">Not currently listed on any service in ${escapeHtml(store.getSetting("region") || "ZA")}.</p>${searchFree}`;
+
+        // Each logo is a link: free services open a search for this title,
+        // everything else opens the JustWatch page with all options.
+        const linkFor = p => {
+            const service = MyFlix.serviceFor(p.name);
+            return service ? MyFlix.serviceLink(service, t.name) : providers.link;
+        };
         const group = (label, list) => list.length ? `
             <div class="provider-group"><span class="label">${label}</span><div class="provider-logos">
-                ${list.map(p => `<span class="provider" title="${escapeHtml(p.name)}"><img src="${escapeHtml(p.logo)}" alt="${escapeHtml(p.name)}" loading="lazy"><span>${escapeHtml(p.name)}</span></span>`).join("")}
+                ${list.map(p => `<a class="provider" href="${escapeHtml(linkFor(p))}" target="_blank" rel="noopener" title="Open ${escapeHtml(p.name)}">
+                    <img src="${escapeHtml(p.logo)}" alt="" loading="lazy"><span>${escapeHtml(p.name)}</span>${icon("external-link", "provider-out")}</a>`).join("")}
             </div></div>` : "";
-        const body = group("Stream", providers.stream) + group("Free", providers.free) + group("Rent", providers.rent) + group("Buy", providers.buy);
+        const body = group("Free", providers.free) + group("Stream", providers.stream) + group("Rent", providers.rent) + group("Buy", providers.buy);
         return (body || `<p class="muted">No streaming options found.</p>`) +
+            (providers.free.length ? "" : searchFree) +
             `<p class="attribution">Streaming data by JustWatch · <a href="${escapeHtml(providers.link)}" target="_blank" rel="noopener">See all options</a></p>`;
+    }
+
+    function serviceChip(s, href) {
+        return `<a class="provider provider--text" href="${escapeHtml(href)}" target="_blank" rel="noopener">
+            <span class="service-dot" style="--c:${s.color};--ink:${s.ink || "#fff"}">${escapeHtml(s.name.replace(/^The /, "").charAt(0))}</span>
+            <span>${escapeHtml(s.name)}</span>${icon("external-link", "provider-out")}</a>`;
+    }
+
+    // The first free service carrying this title (for the big header button).
+    function freeOption(t, info) {
+        const p = info.providers?.free?.[0];
+        if (!p) return null;
+        const service = MyFlix.serviceFor(p.name);
+        return { name: service?.name || p.name, url: service ? MyFlix.serviceLink(service, t.name) : info.providers.link };
     }
 
     // ---------- episodes (episode tracker) ----------

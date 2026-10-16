@@ -38,7 +38,10 @@
             H.becauseRow()
         );
         if (!tmdb.enabled()) list.append(H.tmdbCta());
-        else list.append(C.createRow({ title: "Popular Movies in South Africa", variant: "wide", load: () => tmdb.popularMovies().then(r => r.map(x => M.fromTmdb(x, "movie"))) }));
+        else list.append(
+            C.createRow({ title: "Popular Movies in South Africa", variant: "wide", load: () => tmdb.popularMovies().then(r => r.map(x => M.fromTmdb(x, "movie"))) }),
+            C.createRow({ title: `Free to Stream in ${MyFlix.regionName(MyFlix.store.getSetting("region") || "ZA")}`, subtitle: "On Tubi, Plex, YouTube and more", hideIfEmpty: true, load: () => tmdb.freeTitles("movie").then(r => r.map(x => M.fromTmdb(x, "movie"))), onExplore: () => MyFlix.router.go("classics") })
+        );
         list.append(
             C.createRow({ title: `On TV Tonight`, subtitle: "Airing today on local channels", hideIfEmpty: true, load: H.onTonight }),
             C.createRow({ title: "Critically Acclaimed Dramas", load: () => H.tvGenre(MyFlix.genreByKey("drama")) }),
@@ -201,10 +204,83 @@
 
         const list = rows(view);
         list.append(H.continueRow());
+        freeStreamingRows(list);
+        list.append(servicesDirectory());
         MyFlix.classicCollections.forEach(c => list.append(collectionRow(c)));
 
         const { title } = await H.classicHero();
         if (live()) MyFlix.billboard.render(heroEl, title, { kicker: "Free Classic Cinema" });
+    }
+
+    // ---------- FREE STREAMING (Tubi, Plex, YouTube…) ----------
+    const regionName = () => MyFlix.regionName(MyFlix.store.getSetting("region") || "ZA");
+
+    // Rows of titles that are free to stream in your country (needs TMDB).
+    function freeStreamingRows(list) {
+        if (!tmdb.enabled()) {
+            list.append(H.tmdbCta(`Add a free TMDB key to see which movies and shows are free to stream in ${regionName()} on services like Tubi, Plex and YouTube.`));
+            return;
+        }
+        list.append(
+            C.createRow({ title: `Free Movies in ${regionName()}`, subtitle: "Free or free with ads on the services below", hideIfEmpty: true, load: () => tmdb.freeTitles("movie").then(r => r.map(x => M.fromTmdb(x, "movie"))) }),
+            C.createRow({ title: `Free TV in ${regionName()}`, hideIfEmpty: true, load: () => tmdb.freeTitles("tv").then(r => r.map(x => M.fromTmdb(x, "tv"))) })
+        );
+        // One row per free service that operates in your country.
+        tmdb.regionProviders("movie").then(providers => {
+            MyFlix.freeServices.forEach(s => {
+                const p = providers.find(pr => s.tmdbNames.some(n => n.toLowerCase() === pr.provider_name.toLowerCase()));
+                if (!p || !list.isConnected) return;
+                const row = C.createRow({
+                    title: `Free on ${s.name}`,
+                    hideIfEmpty: true,
+                    load: () => tmdb.freeTitles("movie", p.provider_id).then(r => r.map(x => M.fromTmdb(x, "movie"))),
+                    onExplore: () => window.open(s.url, "_blank", "noopener")
+                });
+                list.querySelector(".services")?.before(row);
+            });
+        }).catch(() => {});
+    }
+
+    // Directory of free, legal streaming services.
+    function servicesDirectory() {
+        const el = document.createElement("section");
+        el.className = "services";
+        el.innerHTML = `
+            <div class="services-head">
+                <h2>${icon("radio-tower")} More Free Streaming</h2>
+                <p class="muted">Free, legal services with thousands more movies and shows. They open in a new tab, because they don't allow their players inside other websites.</p>
+            </div>
+            <div class="services-grid">
+                ${MyFlix.freeServices.map(s => `
+                    <a class="service" href="${escapeHtml(s.url)}" target="_blank" rel="noopener" data-service="${s.id}">
+                        <span class="service-logo" style="--c:${s.color};--ink:${s.ink || "#fff"}">${escapeHtml(s.name.replace(/^The /, "").replace(/^Rakuten /, "").charAt(0))}</span>
+                        <span class="service-body">
+                            <strong>${escapeHtml(s.name)} ${icon("external-link", "provider-out")}</strong>
+                            <span class="service-desc">${escapeHtml(s.description)}</span>
+                            <span class="service-tags">${s.tags.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}<span class="pill service-avail" hidden></span></span>
+                        </span>
+                    </a>`).join("")}
+            </div>
+            <p class="small muted services-note">${tmdb.enabled() ? `Checking which services operate in ${escapeHtml(regionName())}…` : "Some services are only available in certain countries. Add a TMDB key and MYFLIX will check which ones work where you are."}</p>`;
+
+        // Mark which services TMDB says are available in your country.
+        if (tmdb.enabled()) {
+            Promise.all([tmdb.regionProviders("movie"), tmdb.regionProviders("tv")]).then(([a, b]) => {
+                const names = new Set([...a, ...b].map(p => p.provider_name.toLowerCase()));
+                el.querySelectorAll("[data-service]").forEach(card => {
+                    const s = MyFlix.freeServices.find(x => x.id === card.dataset.service);
+                    const here = s.tmdbNames.some(n => names.has(n.toLowerCase()));
+                    const badge = card.querySelector(".service-avail");
+                    badge.hidden = false;
+                    badge.textContent = here ? `Available in ${regionName()}` : `Not listed in ${regionName()}`;
+                    badge.classList.add(here ? "pill--ok" : "pill--no");
+                });
+                el.querySelector(".services-note").textContent = `Availability in ${regionName()} from JustWatch via TMDB. Services that aren't listed may still work, or may need a different country.`;
+            }).catch(() => {
+                el.querySelector(".services-note").textContent = "Couldn't check availability right now.";
+            });
+        }
+        return el;
     }
 
     // Big tile used in the Theatre: poster + synopsis + Play.
@@ -248,6 +324,6 @@
         home: { title: "", render: home },
         tv: { title: "TV Shows", render: tv },
         movies: { title: "Movies", render: movies },
-        classics: { title: "Classics", render: classics }
+        classics: { title: "Watch Free", render: classics }
     });
 })(window.MyFlix = window.MyFlix || {});

@@ -45,6 +45,22 @@
             with_genres: genreIds, sort_by: "popularity.desc", include_adult: "false", "vote_count.gte": "150", page
         }).then(results),
         search: q => get("/search/multi", { query: q, include_adult: "false" }).then(d => results(d).filter(r => r.media_type !== "person")),
+
+        // Titles that are FREE (or free with ads) to stream in your country,
+        // according to JustWatch data on TMDB. Optionally from one provider.
+        freeTitles: (type = "movie", providerId = null, page = 1) => get(`/discover/${type}`, {
+            watch_region: MyFlix.store.getSetting("region") || "ZA",
+            with_watch_monetization_types: "free|ads",
+            with_watch_providers: providerId,
+            sort_by: "popularity.desc",
+            include_adult: "false",
+            page
+        }).then(results),
+
+        // Every streaming service TMDB knows about in your country.
+        regionProviders: (type = "movie") => get(`/watch/providers/${type}`, {
+            watch_region: MyFlix.store.getSetting("region") || "ZA"
+        }, { cacheMinutes: 720 }).then(d => d.results || []),
         movie: id => get(`/movie/${id}`, { append_to_response: "credits,videos,watch/providers,external_ids,similar" }),
         tv: id => get(`/tv/${id}`, { append_to_response: "external_ids,watch/providers,videos" }),
         // Find TMDB's id for a show we only know from TVMaze (via IMDb id).
