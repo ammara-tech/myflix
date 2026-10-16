@@ -42,6 +42,8 @@
             C.createRow({ title: "Popular Movies in South Africa", variant: "wide", load: () => tmdb.popularMovies().then(r => r.map(x => M.fromTmdb(x, "movie"))) }),
             C.createRow({ title: `Free to Stream in ${MyFlix.regionName(MyFlix.store.getSetting("region") || "ZA")}`, subtitle: "On Tubi, Plex, YouTube and more", hideIfEmpty: true, load: () => tmdb.freeTitles("movie").then(r => r.map(x => M.fromTmdb(x, "movie"))), onExplore: () => MyFlix.router.go("classics") })
         );
+        // Free streaming services directory (shown on Home only)
+        list.append(servicesDirectory());
         list.append(
             C.createRow({ title: `On TV Tonight`, subtitle: "Airing today on local channels", hideIfEmpty: true, load: H.onTonight }),
             C.createRow({ title: "Critically Acclaimed Dramas", load: () => H.tvGenre(MyFlix.genreByKey("drama")) }),
@@ -161,7 +163,9 @@
     // ---------- CLASSICS ----------
     function collectionRow(c) {
         const films = c.filter ? MyFlix.classics.filter(c.filter) : c.ids.map(id => MyFlix.classics.find(f => f.id === id)).filter(Boolean);
-        return C.createRow({ title: c.title, subtitle: c.note, items: films.map(M.fromClassic), cardOpts: () => ({ showTitle: false }) });
+        const row = C.createRow({ title: c.title, subtitle: c.note, items: films.map(M.fromClassic), cardOpts: () => ({ showTitle: false }) });
+        row.classList.add("row--collection");
+        return row;
     }
 
     async function classics(view, route, live) {
@@ -205,7 +209,6 @@
         const list = rows(view);
         list.append(H.continueRow());
         freeStreamingRows(list);
-        list.append(servicesDirectory());
         MyFlix.classicCollections.forEach(c => list.append(collectionRow(c)));
 
         const { title } = await H.classicHero();
@@ -236,7 +239,8 @@
                     load: () => tmdb.freeTitles("movie", p.provider_id).then(r => r.map(x => M.fromTmdb(x, "movie"))),
                     onExplore: () => window.open(s.url, "_blank", "noopener")
                 });
-                list.querySelector(".services")?.before(row);
+                const anchor = list.querySelector(".row--collection");
+                if (anchor) anchor.before(row); else list.appendChild(row);
             });
         }).catch(() => {});
     }
@@ -249,6 +253,10 @@
             <div class="services-head">
                 <h2>${icon("radio-tower")} More Free Streaming</h2>
                 <p class="muted">Free, legal services with thousands more movies and shows. They open in a new tab, because they don't allow their players inside other websites.</p>
+                <div class="services-filter" role="group" aria-label="Filter services">
+                    <button type="button" class="chip is-on" data-filter="all" aria-pressed="true">All services</button>
+                    <button type="button" class="chip" data-filter="here" aria-pressed="false" ${tmdb.enabled() ? "disabled" : "disabled title=\"Add a TMDB key in Settings to use this filter\""}>${icon("globe")} Free in ${escapeHtml(regionName())}</button>
+                </div>
             </div>
             <div class="services-grid">
                 ${MyFlix.freeServices.map(s => `
@@ -261,6 +269,7 @@
                         </span>
                     </a>`).join("")}
             </div>
+            <p class="services-empty muted hidden">None of these services are listed in ${escapeHtml(regionName())} right now. Switch to “All services” to see them anyway.</p>
             <p class="small muted services-note">${tmdb.enabled() ? `Checking which services operate in ${escapeHtml(regionName())}…` : "Some services are only available in certain countries. Add a TMDB key and MYFLIX will check which ones work where you are."}</p>`;
 
         // Mark which services TMDB says are available in your country.
@@ -276,10 +285,33 @@
                     badge.classList.add(here ? "pill--ok" : "pill--no");
                 });
                 el.querySelector(".services-note").textContent = `Availability in ${regionName()} from JustWatch via TMDB. Services that aren't listed may still work, or may need a different country.`;
+                // Turn on the "Free in <country>" filter, and use it by default when something matches.
+                const hereBtn = el.querySelector('[data-filter="here"]');
+                hereBtn.disabled = false;
+                if (el.querySelector(".pill--ok")) applyFilter("here");
             }).catch(() => {
                 el.querySelector(".services-note").textContent = "Couldn't check availability right now.";
             });
         }
+
+        function applyFilter(mode) {
+            el.querySelectorAll("[data-filter]").forEach(b => {
+                const on = b.dataset.filter === mode;
+                b.classList.toggle("is-on", on);
+                b.setAttribute("aria-pressed", String(on));
+            });
+            let shown = 0;
+            el.querySelectorAll("[data-service]").forEach(card => {
+                const visible = mode === "all" || Boolean(card.querySelector(".pill--ok"));
+                card.classList.toggle("hidden", !visible);
+                if (visible) shown++;
+            });
+            el.querySelector(".services-empty").classList.toggle("hidden", shown > 0);
+        }
+        el.querySelector(".services-filter").addEventListener("click", e => {
+            const b = e.target.closest("[data-filter]");
+            if (b && !b.disabled) applyFilter(b.dataset.filter);
+        });
         return el;
     }
 

@@ -3,7 +3,7 @@
 // ==========================
 // Bump CACHE_VERSION whenever you change any app file, so visitors get
 // the new version instead of the cached one.
-const CACHE_VERSION = "myflix-v3";
+const CACHE_VERSION = "myflix-v4";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 

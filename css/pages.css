@@ -583,7 +583,23 @@
 
 .services-head p {
     max-width: 760px;
+    margin-bottom: 14px;
+}
+
+.services-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 18px;
+}
+
+.services-filter .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.services-empty {
+    padding: 20px 0;
 }
 
 .services-grid {
