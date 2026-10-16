@@ -3,13 +3,16 @@
 // ==========================
 (function (MyFlix) {
     MyFlix.config = {
-        // Optional TMDB key for real trailers in Cinema mode.
-        // Get one free at https://www.themoviedb.org/settings/api
-        //
-        // You can leave this empty: visitors can paste their own key in the
-        // "Real trailers" box on the page (it's saved in their browser only).
-        // Anything you put here is visible to everyone who views the site,
-        // so only use a key you're happy to share publicly.
-        tmdbApiKey: ""
+        // Optional API keys. Leave empty: anyone can add their own in
+        // Profile → Settings, where they're saved only in that browser.
+        // Anything typed here is visible to everyone who views the site.
+        tmdbApiKey: "",   // https://www.themoviedb.org/settings/api  (movies, trailers, where to watch)
+        omdbApiKey: "",   // https://www.omdbapi.com/apikey.aspx        (IMDb, Rotten Tomatoes, Metacritic)
+
+        // Country used for "Where to watch" (ISO code). ZA = South Africa.
+        defaultRegion: "ZA",
+
+        // Free public server that connects watch-party guests to each other.
+        peerjsScript: "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
     };
 })(window.MyFlix = window.MyFlix || {});

@@ -3,7 +3,7 @@
 // ==========================
 // Bump CACHE_VERSION whenever you change any app file, so visitors get
 // the new version instead of the cached one.
-const CACHE_VERSION = "myflix-v1";
+const CACHE_VERSION = "myflix-v2";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
@@ -12,34 +12,48 @@ const APP_FILES = [
     "index.html",
     "manifest.webmanifest",
     "css/base.css",
-    "css/layout.css",
-    "css/carousel.css",
-    "css/details.css",
-    "css/game.css",
-    "css/explore.css",
-    "css/cinema.css",
+    "css/billboard.css",
+    "css/games.css",
+    "css/modal.css",
+    "css/nav.css",
+    "css/pages.css",
+    "css/player.css",
+    "css/rows.css",
     "js/theme.js",
     "js/config.js",
+    "js/icons.js",
     "js/data/genres.js",
+    "js/data/classics.js",
     "js/data/questions.js",
-    "js/data/films.js",
     "js/utils.js",
-    "js/api.js",
-    "js/cards.js",
-    "js/favourites.js",
-    "js/details.js",
-    "js/search.js",
-    "js/recommendations.js",
-    "js/game.js",
-    "js/trailers.js",
-    "js/cinema.js",
+    "js/store.js",
+    "js/models.js",
+    "js/api/tvmaze.js",
+    "js/api/tmdb.js",
+    "js/api/omdb.js",
+    "js/api/wiki.js",
+    "js/api/archive.js",
+    "js/ui/cards.js",
+    "js/ui/billboard.js",
+    "js/ui/details.js",
+    "js/ui/player.js",
+    "js/party.js",
+    "js/ui/mood.js",
+    "js/ui/settings.js",
+    "js/recommend.js",
+    "js/tracker.js",
+    "js/router.js",
+    "js/pages/helpers.js",
+    "js/pages/browse.js",
+    "js/pages/library.js",
+    "js/pages/games.js",
     "js/pwa.js",
     "js/main.js",
+    "assets/apple-touch-icon.png",
     "assets/favicon.svg",
-    "assets/no-poster.svg",
     "assets/icon-192.png",
     "assets/icon-512.png",
-    "assets/apple-touch-icon.png"
+    "assets/no-poster.svg"
 ];
 
 self.addEventListener("install", event => {
@@ -73,11 +87,13 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    // TVMaze posters: cache once, reuse.
-    if (url.hostname.endsWith("tvmaze.com")) {
+    // Posters, fonts and icons that never change: cache once, reuse.
+    if (url.hostname.endsWith("tvmaze.com") || url.hostname === "image.tmdb.org" ||
+        url.hostname === "upload.wikimedia.org" || url.hostname.endsWith("fonts.gstatic.com") ||
+        url.hostname === "fonts.googleapis.com") {
         event.respondWith(cacheFirst(request, DATA_CACHE));
     }
-    // Everything else (TMDB, YouTube, video) goes straight to the network.
+    // Everything else (TMDB data, YouTube, Archive video) goes straight to the network.
 });
 
 async function staleWhileRevalidate(request, cacheName) {

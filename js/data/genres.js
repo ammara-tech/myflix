@@ -1,25 +1,46 @@
 // ==========================
-// GENRE DATA
+// GENRES + MOODS
 // ==========================
-// `matches` lists the TVMaze genre names that belong to each category.
-// `types` lists TVMaze show types (TVMaze treats Animation and Documentary
-// as show types, not genres).
 (function (MyFlix) {
+    // One shared genre list used across TV (TVMaze), Movies (TMDB) and Classics.
+    // tvmaze: TVMaze genre names (and show `types` for Animation/Documentary)
+    // tmdb:   TMDB movie genre ids ("|" = OR)
+    // classic: key in MyFlix.classicGenres
     MyFlix.genres = [
-        { title: "Action & Adventure", color: "#e50914", matches: ["Action", "Adventure"], description: "High-stakes action, epic journeys, and nonstop thrills." },
-        { title: "Drama", color: "#b3001b", matches: ["Drama"], description: "Powerful stories driven by emotion, conflict, and real-life struggles." },
-        { title: "Comedy", color: "#f39c12", matches: ["Comedy"], description: "Light, funny stories packed with humor and feel-good moments." },
-        { title: "Horror", color: "#2c3e50", matches: ["Horror"], description: "Chilling tales designed to scare, shock, and keep you on edge." },
-        { title: "Sci-Fi", color: "#00bcd4", matches: ["Science-Fiction"], description: "Futuristic worlds, advanced tech, and mind-bending ideas." },
-        { title: "Romance", color: "#ff4d6d", matches: ["Romance"], description: "Love stories, deep connections, and emotional relationships." },
-        { title: "Thriller", color: "#8e44ad", matches: ["Thriller", "Espionage"], description: "High tension, twists, and edge-of-your-seat suspense." },
-        { title: "Mystery", color: "#34495e", matches: ["Mystery", "Supernatural"], description: "Unsolved cases, hidden clues, and shocking revelations." },
-        { title: "Fantasy", color: "#9b59b6", matches: ["Fantasy"], description: "Magical worlds, mythical creatures, and epic adventures." },
-        { title: "Animation", color: "#f1c40f", matches: ["Anime"], types: ["Animation"], description: "Animated stories full of imagination for all ages." },
-        { title: "Crime", color: "#7f8c8d", matches: ["Crime", "Legal"], description: "Dark investigations, criminal minds, and justice stories." },
-        { title: "Documentary", color: "#16a085", matches: ["History", "Nature"], types: ["Documentary"], description: "Real stories, real people, real events from the world." },
-        { title: "Family", color: "#27ae60", matches: ["Family", "Children"], description: "Fun, safe entertainment for all ages to enjoy together." },
-        { title: "War", color: "#c0392b", matches: ["War"], description: "Battlefield stories and the human cost of conflict." },
-        { title: "Western", color: "#d35400", matches: ["Western"], description: "Outlaws, cowboys, and life on the untamed frontier." }
+        { key: "action", title: "Action & Adventure", tvmaze: ["Action", "Adventure"], tmdb: "28|12", classic: "action" },
+        { key: "comedy", title: "Comedy", tvmaze: ["Comedy"], tmdb: "35", classic: "comedy" },
+        { key: "drama", title: "Drama", tvmaze: ["Drama"], tmdb: "18", classic: "drama" },
+        { key: "horror", title: "Horror", tvmaze: ["Horror"], tmdb: "27", classic: "horror" },
+        { key: "scifi", title: "Sci-Fi", tvmaze: ["Science-Fiction"], tmdb: "878", classic: "scifi" },
+        { key: "romance", title: "Romance", tvmaze: ["Romance"], tmdb: "10749", classic: "romance" },
+        { key: "thriller", title: "Thriller", tvmaze: ["Thriller", "Espionage"], tmdb: "53", classic: "thriller" },
+        { key: "crime", title: "Crime", tvmaze: ["Crime", "Legal"], tmdb: "80", classic: "crime" },
+        { key: "mystery", title: "Mystery", tvmaze: ["Mystery", "Supernatural"], tmdb: "9648", classic: "mystery" },
+        { key: "fantasy", title: "Fantasy", tvmaze: ["Fantasy"], tmdb: "14", classic: "fantasy" },
+        { key: "animation", title: "Animation", tvmaze: ["Anime"], tvmazeTypes: ["Animation"], tmdb: "16", classic: "animation" },
+        { key: "documentary", title: "Documentary", tvmaze: ["History", "Nature"], tvmazeTypes: ["Documentary"], tmdb: "99", classic: "documentary" },
+        { key: "family", title: "Family", tvmaze: ["Family", "Children"], tmdb: "10751", classic: "family" },
+        { key: "war", title: "War", tvmaze: ["War"], tmdb: "10752", classic: "war" },
+        { key: "western", title: "Western", tvmaze: ["Western"], tmdb: "37", classic: "western" }
+    ];
+
+    MyFlix.genreByKey = key => MyFlix.genres.find(g => g.key === key);
+
+    // Does a TVMaze show belong to one of our genres?
+    MyFlix.tvShowInGenre = (show, genre) =>
+        Boolean(show.genres?.some(g => genre.tvmaze.includes(g)) || genre.tvmazeTypes?.includes(show.type));
+
+    // Mood picker: each mood maps to a few genres.
+    MyFlix.moods = [
+        { key: "feelgood", title: "Feel-good", icon: "smile", genres: ["comedy", "family", "romance"] },
+        { key: "thrilling", title: "On the edge", icon: "zap", genres: ["thriller", "action", "crime"] },
+        { key: "scary", title: "Scare me", icon: "ghost", genres: ["horror", "mystery"] },
+        { key: "romantic", title: "Romantic", icon: "heart", genres: ["romance", "drama"] },
+        { key: "mindbending", title: "Mind-bending", icon: "brain", genres: ["scifi", "mystery", "fantasy"] },
+        { key: "laugh", title: "Make me laugh", icon: "laugh", genres: ["comedy", "animation"] },
+        { key: "cry", title: "A good cry", icon: "cloud-rain", genres: ["drama", "romance", "war"] },
+        { key: "family", title: "Family night", icon: "users", genres: ["family", "animation", "fantasy"] },
+        { key: "epic", title: "Epic adventure", icon: "mountain", genres: ["action", "fantasy", "western", "war"] },
+        { key: "learn", title: "Learn something", icon: "lightbulb", genres: ["documentary"] }
     ];
 })(window.MyFlix = window.MyFlix || {});

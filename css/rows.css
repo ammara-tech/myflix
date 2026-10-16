@@ -1,0 +1,632 @@
+/* ==========================
+   ROWS + CARDS (the Netflix sliders)
+========================== */
+
+.rows {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);  /* never let a wide row stretch the page */
+    gap: clamp(8px, 1.5vw, 20px);
+}
+
+.row {
+    position: relative;
+}
+
+.row-head {
+    padding: 0 var(--page-x);
+    margin-bottom: 2px;
+}
+
+.row-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+    font-weight: 700;
+    color: var(--text-2);
+}
+
+/* "Explore all ›" appears when you hover the row, like Netflix */
+.row-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #54b9c5;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.row-explore .icon {
+    width: 14px;
+    height: 14px;
+}
+
+.row:hover .row-explore,
+.row-explore:focus-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.row-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.row-slider {
+    position: relative;
+}
+
+.row-track {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 28px var(--page-x) 34px;   /* room for the hover zoom */
+    margin: -20px 0 -26px;
+    scroll-snap-type: x proximity;
+    scroll-padding: 0 var(--page-x);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+}
+
+.row-track::-webkit-scrollbar {
+    display: none;
+}
+
+.row-empty {
+    padding: 24px var(--page-x);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.row-empty--error {
+    color: #ff8a8a;
+}
+
+/* side arrows (desktop) */
+.row-arrow {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    width: calc(var(--page-x) - 6px);
+    min-width: 34px;
+    color: #fff;
+    background: rgba(20, 20, 20, 0.55);
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.row-arrow .icon {
+    width: 34px;
+    height: 34px;
+    transition: transform 0.15s ease;
+}
+
+.row-arrow:hover .icon {
+    transform: scale(1.25);
+}
+
+.row-arrow--prev {
+    left: 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.row-arrow--next {
+    right: 0;
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.row:hover .row-arrow:not(.hidden-arrow) {
+    opacity: 1;
+}
+
+.row-arrow.hidden-arrow {
+    pointer-events: none;
+}
+
+/* ---------- card sizes ---------- */
+.card {
+    --w: clamp(130px, 13.5vw, 230px);
+    position: relative;
+    flex: 0 0 var(--w);
+    scroll-snap-align: start;
+    border-radius: var(--radius);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), z-index 0s 0.3s;
+}
+
+.card--wide {
+    --w: clamp(220px, 23vw, 400px);
+}
+
+.card--top10 {
+    --w: clamp(190px, 19vw, 320px);
+    display: flex;
+    align-items: stretch;
+}
+
+.card-media {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-align: left;
+}
+
+.card--wide .card-media {
+    aspect-ratio: 16 / 9;
+}
+
+.card--top10 .card-media {
+    width: 52%;
+    margin-left: auto;
+}
+
+.card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-img--contain {
+    object-fit: contain;
+    background: #000;
+}
+
+/* the big outlined rank number in Top 10 rows */
+.rank {
+    position: absolute;
+    left: 0;
+    bottom: -6%;
+    width: 60%;
+    font-family: var(--font-display);
+    font-size: clamp(9rem, 15vw, 15rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    text-align: right;
+    color: var(--bg);
+    -webkit-text-stroke: 4px #595959;
+    paint-order: stroke fill;
+    user-select: none;
+    pointer-events: none;
+}
+
+.card--top10:nth-child(10) .rank {
+    letter-spacing: -0.12em;
+    font-size: clamp(7.5rem, 12.5vw, 12.5rem);
+}
+
+:root[data-theme="light"] .rank {
+    -webkit-text-stroke-color: #b0b0b0;
+}
+
+/* typographic poster for Classics while the image loads */
+.type-poster {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 14px;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(229, 9, 20, 0.35), transparent 60%),
+        linear-gradient(160deg, #2b2b2b 0%, #0d0d0d 100%);
+    color: #fff;
+    transition: opacity 0.4s ease;
+}
+
+.type-poster.faded {
+    opacity: 0;
+}
+
+.tp-kicker {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--red);
+}
+
+.tp-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2vw, 2.1rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+}
+
+.tp-year {
+    font-size: 0.75rem;
+    color: #aaa;
+    letter-spacing: 0.1em;
+}
+
+.card--wide .type-poster {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.badge-free {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--red);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.badge-free .icon {
+    width: 11px;
+    height: 11px;
+}
+
+.card-title-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 2;
+    display: grid;
+    gap: 2px;
+    padding: 30px 10px 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+}
+
+.card-title-overlay small {
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progress {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 6px;
+    z-index: 3;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.progress > span {
+    display: block;
+    height: 100%;
+    background: var(--red);
+}
+
+.card--wide .card-title-overlay:has(+ .progress) {
+    padding-bottom: 16px;
+}
+
+.progress--inline {
+    position: static;
+    display: block;
+    margin: 10px 0 0;
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--surface-3);
+}
+
+/* ---------- hover preview panel ---------- */
+.card-hover {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 3;
+    padding: 12px 12px 14px;
+    background: var(--bg-elevated);
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: var(--shadow-card);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.card--top10 .card-hover {
+    left: 48%;
+}
+
+.card-hover-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.card-hover-actions .circle {
+    width: 32px;
+    height: 32px;
+}
+
+.circle--end {
+    margin-left: auto;
+}
+
+.card-hover-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-hover-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.card-hover-genres {
+    font-size: 0.75rem;
+    color: var(--text-2);
+}
+
+/* desktop: zoom the card and drop the info panel below it */
+@media (hover: hover) and (min-width: 901px) {
+    .row-track {
+        padding-bottom: 150px;
+        margin-bottom: -142px;
+    }
+
+    .card:hover,
+    .card:focus-within {
+        z-index: 10;
+        transform: scale(1.18) translateY(-12px);
+        transition: transform 0.3s 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), z-index 0s;
+    }
+
+    /* keep first/last card inside the screen when they grow */
+    .card:first-child:hover,
+    .card:first-child:focus-within {
+        transform-origin: left center;
+    }
+
+    .card:last-child:hover,
+    .card:last-child:focus-within {
+        transform-origin: right center;
+    }
+
+    .card:hover .card-media,
+    .card:focus-within .card-media {
+        border-radius: var(--radius) var(--radius) 0 0;
+        box-shadow: var(--shadow-card);
+    }
+
+    .card--top10:hover .card-media,
+    .card--top10:focus-within .card-media {
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .card:hover .card-hover,
+    .card:focus-within .card-hover {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition-delay: 0.35s;
+    }
+
+    .card:hover .card-title-overlay {
+        opacity: 0;
+    }
+}
+
+/* touch: no hover panel (tap opens More Info) */
+@media (hover: none), (max-width: 900px) {
+    .card-hover {
+        display: none;
+    }
+
+    .row-arrow {
+        display: none;
+    }
+}
+
+/* ---------- skeletons ---------- */
+.skeleton .card-media {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+}
+
+.card--top10.skeleton .card-media {
+    width: 52%;
+}
+
+/* ---------- grids (search, My List, More like this) ---------- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 14vw, 200px), 1fr));
+    gap: 34px 8px;
+    padding: 0 var(--page-x) 20px;
+}
+
+.card-grid .card {
+    --w: auto;
+}
+
+.card-grid--wide {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* grids don't have room below for the hover panel, so keep it simple */
+@media (hover: hover) and (min-width: 901px) {
+    .card-grid .card:hover,
+    .card-grid .card:focus-within {
+        transform: scale(1.06);
+        transition-delay: 0s;
+    }
+
+    .card-grid .card-hover {
+        top: auto;
+        bottom: 0;
+        border-radius: 0 0 var(--radius) var(--radius);
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.92) 25%);
+        color: #fff;
+        padding-top: 40px;
+        transition-delay: 0s !important;
+    }
+
+    .card-grid .card-hover-meta,
+    .card-grid .card-hover-genres {
+        color: #ddd;
+    }
+
+    .card-grid .card:hover .card-media {
+        border-radius: var(--radius);
+    }
+}
+
+.grid-title {
+    padding: 28px var(--page-x) 12px;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* star ratings under watched cards */
+.stars {
+    display: flex;
+    gap: 2px;
+    padding-top: 8px;
+}
+
+.star {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: var(--surface-3);
+    transition: transform 0.1s ease, color 0.1s ease;
+}
+
+.star .icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke-width: 1.5;
+}
+
+.star.filled {
+    color: var(--gold);
+}
+
+.stars:hover .star {
+    color: var(--gold);
+}
+
+.stars .star:hover ~ .star {
+    color: var(--surface-3);
+}
+
+.star:hover {
+    transform: scale(1.15);
+}
+
+/* ---------- call to action banner ---------- */
+.cta-banner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 12px var(--page-x);
+    padding: 24px 28px;
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(229, 9, 20, 0.35), transparent 55%),
+        linear-gradient(120deg, #1f1f1f, #121212);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.cta-banner h3 {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+}
+
+.cta-banner p {
+    color: #bbb;
+    max-width: 640px;
+}
+
+.cta-banner .btn {
+    margin-left: auto;
+    background: #fff;
+    color: #000;
+}
+
+.cta-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--red);
+}
+
+.cta-icon .icon {
+    width: 30px;
+    height: 30px;
+}
+
+@media (max-width: 700px) {
+    .cta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .cta-banner .btn {
+        margin-left: 0;
+    }
+}
+
+:root[data-theme="light"] .circle {
+    border-color: rgba(0, 0, 0, 0.35);
+    background: rgba(255, 255, 255, 0.85);
+    color: #141414;
+}
+
+:root[data-theme="light"] .circle:hover:not(:disabled),
+:root[data-theme="light"] .circle.is-on {
+    border-color: #141414;
+}
+
+:root[data-theme="light"] .circle--primary {
+    background: #141414;
+    border-color: #141414;
+    color: #fff;
+}
