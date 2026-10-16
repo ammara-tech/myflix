@@ -106,9 +106,50 @@
         };
     }
 
+    // Internet Archive search result -> MYFLIX title (playable in the player).
+    // extra: { genre, min (minutes), queueName }
+    function runtimeMinutes(r) {
+        if (!r) return null;
+        const s = String(Array.isArray(r) ? r[0] : r);
+        const parts = s.match(/(\d+):(\d+)(?::(\d+))?/);
+        if (parts) return parts[3] ? +parts[1] * 60 + +parts[2] + +parts[3] / 60 : +parts[1] + +parts[2] / 60;
+        const mins = s.match(/(\d+(?:\.\d+)?)\s*min/i);
+        return mins ? +mins[1] : null;
+    }
+    function fromArchive(doc, extra = {}) {
+        const id = doc.identifier;
+        const title = String(Array.isArray(doc.title) ? doc.title[0] : doc.title || id).replace(/\s+/g, " ").trim();
+        const year = +(doc.year || String(doc.date || "").slice(0, 4)) || null;
+        const runtime = runtimeMinutes(doc.runtime);
+        const desc = stripHtml(Array.isArray(doc.description) ? doc.description.join(" ") : doc.description || "");
+        return {
+            key: `archive:${id}`,
+            kind: "archive",
+            id,
+            name: title,
+            year,
+            poster: MyFlix.archive.thumb(id),
+            backdrop: MyFlix.archive.thumb(id),
+            genres: extra.genre ? [extra.genre] : [],
+            rating: null,
+            runtime: runtime ? Math.round(runtime) : null,
+            overview: desc.length > 400 ? desc.slice(0, 397).replace(/\s+\S*$/, "") + "…" : desc,
+            licence: "Internet Archive public-domain collection",
+            film: {
+                id, title, year, runtime: runtime || extra.min || 10, genres: [], description: desc,
+                licence: "Internet Archive public-domain collection",
+                archiveIds: [id], noSearch: true, minMB: (extra.min ?? 1) * 0.8
+            }
+        };
+    }
+
     // Rebuild a full title from a saved My List item (which only keeps a few fields).
     function fromKey(key) {
         const [kind, id] = key.split(":");
+        if (kind === "archive") {
+            const item = MyFlix.store.list.get(key) || MyFlix.store.progress.get(id)?.meta || {};
+            return fromArchive({ identifier: key.slice(8), title: item.name, year: item.year });
+        }
         if (kind === "classic") {
             const film = MyFlix.classics.find(f => f.id === id);
             return film ? fromClassic(film) : null;
@@ -116,5 +157,5 @@
         return MyFlix.store.list.get(key) || { key, kind, id: +id, name: "" };
     }
 
-    MyFlix.models = { fromTvmaze, fromTmdb, fromClassic, fromAnilist, fromKey, tmdbImage, TMDB_GENRES };
+    MyFlix.models = { fromTvmaze, fromTmdb, fromClassic, fromAnilist, fromArchive, fromKey, tmdbImage, TMDB_GENRES };
 })(window.MyFlix = window.MyFlix || {});

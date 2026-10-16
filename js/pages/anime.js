@@ -64,6 +64,13 @@
             load: () => MyFlix.anilist.byGenre(g).then(anime),
             onExplore: () => MyFlix.router.go(`anime?genre=${encodeURIComponent(g)}`)
         })));
+        // Free anime you can watch legally (open anime + official channels).
+        const freeLink = document.createElement("section");
+        freeLink.className = "anime-free";
+        freeLink.appendChild(MyFlix.freePage.animeChannels());
+        freeLink.insertAdjacentHTML("beforeend", `<p class="services-note muted small"><a href="#/classics?tab=anime">Open-licence anime that streams right here →</a></p>`);
+        view.appendChild(freeLink);
+
         const credit = document.createElement("p");
         credit.className = "attribution page-credit";
         credit.innerHTML = `Anime data from <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> and <a href="https://myanimelist.net" target="_blank" rel="noopener">MyAnimeList</a> (via Jikan).`;

@@ -162,11 +162,11 @@
     const progressApi = {
         get: id => progress[id] || null,
         all: () => Object.entries(progress).map(([id, p]) => ({ id, ...p })),
-        set(id, time, duration) {
+        set(id, time, duration, meta) {
             if (!duration) return;
             // Finished (last 3%)? Clear it so it doesn't sit in Continue Watching.
             if (time / duration > 0.97) delete progress[id];
-            else progress[id] = { time, duration, updatedAt: Date.now() };
+            else progress[id] = { time, duration, updatedAt: Date.now(), ...(meta ? { meta } : {}) };
             storage.write(K.progress, progress);
         },
         clear(id) {

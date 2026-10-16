@@ -11,7 +11,8 @@
 
     // Rank the MP4 files in one Archive item; best first.
     function bestFile(files, film) {
-        const minBytes = Math.max(4, film.runtime * 1.2) * 1e6; // skip clips and trailers
+        // skip clips and trailers (browse items set their own minimum)
+        const minBytes = (film.minMB != null ? film.minMB : Math.max(4, film.runtime * 1.2)) * 1e6;
         const mp4s = files.filter(f =>
             /\.mp4$/i.test(f.name) &&
             !/trailer|sample|preview|clip|_thumb/i.test(f.name) &&
@@ -90,6 +91,7 @@
                 const hit = await tryItem(id, film);
                 if (hit) return hit;
             }
+            if (film.noSearch) throw new Error(`“${film.title}” isn't available on the Internet Archive right now.`);
             // Curated collections with the year, then any film with the year, then curated without.
             for (const [withYear, curated] of [[true, true], [true, false], [false, true]]) {
                 let ids = [];
@@ -108,5 +110,24 @@
         MyFlix.utils.uncache(`archive:${film.id}`);
     }
 
-    MyFlix.archive = { resolve, forget };
+    // ---------- browsing (cartoons, TV, documentaries, Retro TV) ----------
+    const FIELDS = ["identifier", "title", "year", "date", "description", "downloads", "runtime", "subject"];
+
+    // Search the Archive. Returns raw docs; cached for 12 hours.
+    function search(q, { rows = 40, page = 1, from = null, to = null, sort = "downloads desc" } = {}) {
+        let query = `(${q}) AND mediatype:(movies)`;
+        if (from) query += ` AND year:[${from} TO ${to}]`;
+        const url = `${BASE}/advancedsearch.php?q=${encodeURIComponent(query)}&${FIELDS.map(f => `fl[]=${f}`).join("&")}&sort[]=${encodeURIComponent(sort)}&rows=${rows}&page=${page}&output=json`;
+        return cached(`ias:${url}`, 0.5, async () => (await getJson(url)).response?.docs || []);
+    }
+
+    // Item details for the More Info pop-up.
+    function meta(identifier) {
+        return cached(`iam:${identifier}`, 7, async () => {
+            const m = await getJson(`${BASE}/metadata/${encodeURIComponent(identifier)}/metadata`);
+            return m.result || m.metadata || {};
+        });
+    }
+
+    MyFlix.archive = { resolve, forget, search, meta, thumb: id => `${BASE}/services/img/${encodeURIComponent(id)}`, page: id => `${BASE}/details/${encodeURIComponent(id)}` };
 })(window.MyFlix = window.MyFlix || {});

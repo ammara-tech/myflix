@@ -367,10 +367,12 @@
         return el;
     }
 
+    MyFlix.classicFilms = classics;  // the Films tab of Watch Free (see pages/free.js)
+
     Object.assign(MyFlix.pages = MyFlix.pages || {}, {
         home: { title: "", render: home },
         tv: { title: "TV Shows", render: tv },
         movies: { title: "Movies", render: movies },
-        classics: { title: "Watch Free", render: classics }
+        classics: { title: "Watch Free", render: (...a) => MyFlix.freePage.render(...a) }
     });
 })(window.MyFlix = window.MyFlix || {});

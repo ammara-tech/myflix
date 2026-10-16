@@ -58,6 +58,17 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
   - **Subtitles** (CC button or the C key): official subtitle files when a film has them (e.g. *Tears of Steel* in 10 languages), or load your own `.srt`/`.vtt` from your device (saved for next time). Adjustable size, background and timing.
   - "Up next" autoplay at the end of a film
   - If a copy fails to load, it automatically tries another
+- **Cartoons, TV shows, documentaries and anime**:
+  - Watch Free has tabs for each, filled live from the Internet Archive's public-domain collections:
+    - Cartoons: Popeye, Betty Boop, Fleischer Superman, Bugs Bunny and more
+    - TV: 15 classic shows such as *Bonanza*, *The Beverly Hillbillies* and *The Lone Ranger*, each with an episodes page
+    - Documentaries: the Prelinger Archives, plus classic commercials
+    - Anime: open-licence animation, plus links to official free anime channels
+  - Episodes play back to back, and new uploads appear automatically.
+- **Retro TV**:
+  - Pick a decade (1920s–1970s) and flip through 7 channels on an old TV set
+  - Channels: cartoons, sitcoms, westerns, sci-fi, a movie of the week, newsreels and commercials
+  - Static between channels and an on-screen channel number; ↑/↓ change channel
 - **Free in your country**: rows of movies and shows that are free (or free with ads) where you live, grouped by service. The data is live from JustWatch via TMDB.
 - **Watch free on…**: every title's pop-up links straight to services that carry it for free, such as Tubi, Plex, YouTube, The Roku Channel and Rakuten Viki.
 - **Free streaming directory**: Tubi, Pluto TV, Plex, The Roku Channel, Crackle, YouTube Movies & TV, Kanopy and Rakuten Viki, each marked as available or not in your country.
@@ -174,18 +185,19 @@ myflix/
 │   ├── modal.css           Title details, mood picker, settings
 │   ├── player.css          Full-screen player, watch party
 │   ├── pages.css           Theatre, services directory, My List, stats
-│   └── games.css           Games page
+│   ├── games.css           Games page
+│   └── free.css            Watch Free tabs, TV show pages, Retro TV
 └── js/
     ├── theme.js            Light/dark theme (loaded first)
     ├── config.js           Optional keys and region
     ├── icons.js            Bundled Lucide icon sprite
-    ├── data/               Classic films, free services, genres & moods, quiz questions
+    ├── data/               Classic films, Archive rows & Retro TV channels, free services, genres & moods, quiz questions
     ├── utils.js            Helpers: escaping, caching, formatting, toast
     ├── store.js            Saved data: list, episodes, progress, history, settings
     ├── models.js           Normalises TVMaze / TMDB / classic titles
     ├── api/                tvmaze · tmdb · omdb · wiki · archive · anilist · jikan · trakt · fanart
     ├── ui/                 cards · billboard · details · player · mood · settings
-    ├── pages/              helpers · browse · anime · library · games
+    ├── pages/              helpers · browse · free (Watch Free tabs) · retro · anime · library · games
     ├── party.js            Watch party
     ├── recommend.js        Recommendations
     ├── tracker.js          Up next and new-episode notifications
