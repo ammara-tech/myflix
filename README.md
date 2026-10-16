@@ -1,122 +1,222 @@
+<div align="center">
+
+<img src="assets/icon-512.png" alt="MYFLIX logo" width="96" height="96">
+
 # MYFLIX
 
-A Netflix-style streaming app built with plain HTML, CSS and JavaScript. Browse TV shows and movies, stream legendary films for free, track the episodes you've watched, see where to stream anything in South Africa, and play movie games.
+**A Netflix-style streaming experience built with nothing but HTML, CSS and JavaScript.**
+
+Browse TV and movies, stream legendary films for free, find what's free to watch in your country, track your episodes and host watch parties.
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
+![No build step](https://img.shields.io/badge/build-none%20required-2ea44f?style=flat-square)
+![Dependencies](https://img.shields.io/badge/dependencies-0-2ea44f?style=flat-square)
+
+[Features](#features) · [Getting started](#getting-started) · [Configuration](#configuration) · [Architecture](#architecture) · [Credits](#credits)
+
+</div>
+
+---
+
+## Overview
+
+MYFLIX recreates the feel of a modern streaming service in the browser, with no frameworks, bundlers or backend. It brings together six public data sources into one interface:
+
+| Source | Role | Key |
+|---|---|---|
+| [TVMaze](https://www.tvmaze.com/api) | TV shows, cast, seasons, episodes, air dates, local TV schedule | Not needed |
+| [TMDB](https://www.themoviedb.org/) | Movies, trailers, backdrops, streaming availability per country | Free |
+| [OMDb](https://www.omdbapi.com/) | IMDb, Rotten Tomatoes and Metacritic scores | Free |
+| [Wikipedia](https://www.wikipedia.org/) | "Did you know?" facts, film posters, trivia questions | Not needed |
+| [Internet Archive](https://archive.org/details/feature_films) | Public-domain films streamed inside the app | Not needed |
+| [PeerJS](https://peerjs.com/) | Peer-to-peer connections for watch parties | Not needed |
 
 ## Features
 
-**Browse like Netflix**
-- Hero billboard, Top 10 rows with big rank numbers, hover previews, and "Explore all" for each row
-- Pages: Home, TV Shows, Movies, Free Classics, My List, Games, plus Stats and Search
-- Genre dropdowns, an expanding search box, and a mobile bottom tab bar
+### Browsing
+- Hero billboard, Top 10 rows with outlined rank numbers, and hover preview cards
+- "More Info" pop-up and an expanding search box
+- Dedicated pages for TV Shows, Movies, Watch Free, My List and Games, each with genre filters
+- Mobile bottom tab bar
+- Light and dark themes, with consistent line iconography throughout
 
-**Free Classic Cinema**
-- 33 public-domain and Creative Commons films, with at least 2 in every genre (Nosferatu, Metropolis, The General, His Girl Friday, Night of the Living Dead, Sintel and more)
-- *The MYFLIX Theatre*: pick a genre, then pick a film, and it plays
-- Full-screen player:
-  - Resume where you left off, ±10s skip, keyboard shortcuts
-  - "Up next" countdown at the end of a film
-  - Themed collections: Silent Era, Film Noir Nights, Monster Classics, Under 20 Minutes…
+### Watch free
+- **The MYFLIX Theatre**: 33 public-domain and Creative Commons films, with at least two per genre. Pick a genre, pick a film, and it plays in a full-screen player.
+- **The player**:
+  - Resume where you left off, skip ±10 seconds, use keyboard shortcuts
+  - "Up next" autoplay at the end of a film
+  - If a copy fails to load, it automatically tries another
+- **Free in your country**: rows of movies and shows that are free (or free with ads) where you live, grouped by service. The data is live from JustWatch via TMDB.
+- **Watch free on…**: every title's pop-up links straight to services that carry it for free, such as Tubi, Plex, YouTube, The Roku Channel and Rakuten Viki.
+- **Free streaming directory**: Tubi, Pluto TV, Plex, The Roku Channel, Crackle, YouTube Movies & TV, Kanopy and Rakuten Viki, each marked as available or not in your country.
 
-**Watch Party**: watch a classic in sync with friends using a 6-letter party code or invite link, with live chat and reactions.
+### Title details
+- Cast, trailer, and scores from TVMaze, TMDB, IMDb, Rotten Tomatoes and Metacritic
+- Where to watch, split into free, subscription, rent and buy
+- "Did you know?" facts from Wikipedia, and "More like this"
 
-**More Info pop-up**
-- Combines five sources: TVMaze, TMDB, OMDb, Wikipedia and the Internet Archive
-- Shows the cast, the trailer, and IMDb / Rotten Tomatoes / Metacritic scores
-- Shows **where to watch in South Africa** (Netflix, Showmax, Prime Video…), "Did you know?" facts, and "More like this"
+### Personal
+- **My List**: Want to Watch and Watched tabs, with 1–5 star ratings
+- **Episode tracker**:
+  - Tick off episodes, and "Continue Watching" shows your next one
+  - The notification bell counts down to new episodes of shows you follow
+- **Recommendations**: "Because you saved…", weighted by your genres and ratings
+- **Stats**: hours watched, top genres, a 14-day activity chart and nine unlockable badges
 
-**Episode tracker**
-- Tick off episodes, and "Continue Watching" shows your next one
-- The bell lists new episodes airing in the next two weeks, with a countdown
+### Social and play
+- **Watch party**:
+  - Watch a film in sync with friends using a six-letter code or invite link
+  - Live chat and reactions while you watch
+- **Mood picker**: choose a mood, spin the wheel, get tonight's pick
+- **Guess the Title**: four game modes (Movies, Series, Live TV and Film Trivia), with a countdown, speed and streak bonuses, and saved high scores
 
-**My List**: Want to Watch and Watched tabs, 1–5 star ratings, and "Because you saved…" recommendations.
+### Platform
+- **Installable**: it's a Progressive Web App with offline support
+- **Works offline-first** for data you've already loaded
+- **Opens straight from disk**: no server or build step required
+- **Keeps your data**: data saved by older versions is migrated automatically
 
-**Mood picker** (dice icon): choose a mood, spin the wheel, and get tonight's pick.
+## Getting started
 
-**Games**: Guess the Title in four modes (Movies, Series, Live TV, and Film Trivia from Wikipedia), with a timer, streak and speed bonuses, and high scores.
+### Run locally
 
-**Your Stats**: hours watched, top genres, a 14-day activity chart, and badges to unlock.
+```bash
+git clone https://github.com/ammara-tech/myflix.git
+cd myflix
+```
 
-**Also**
-- Light/dark theme
-- Installable as an app, with offline support
-- Professional line icons throughout (no emojis)
+Then open `index.html` in your browser. That's it: there is nothing to install or build.
 
-## API keys (optional, free)
+For the full experience (offline mode and app install), serve the folder over HTTP, for example with the **Live Server** extension in VS Code, or:
 
-Everything except the Movies page works with no keys. Add them in **Profile → Settings & API keys**. They're saved only in your browser.
+```bash
+python3 -m http.server 8000   # then visit http://localhost:8000
+```
 
-| Service | Unlocks | Get a key |
+### Deploy to GitHub Pages
+
+1. In the repository, open **Settings → Pages**.
+2. Under *Build and deployment*, choose **Deploy from a branch**, then `main` and `/ (root)`, and save.
+3. The site is published at `https://ammara-tech.github.io/myflix/`.
+4. To install it, open the site and choose **Profile → Install app** (on iPhone: **Share → Add to Home Screen**).
+
+> After changing any file, bump `CACHE_VERSION` in `sw.js` so installed copies pick up the new version.
+
+## Configuration
+
+MYFLIX works without any keys. Two optional free keys unlock more:
+
+| Key | Unlocks | Where to get it |
 |---|---|---|
-| TMDB | Movies page, trailers, backdrops, where to watch | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) |
-| OMDb | IMDb, Rotten Tomatoes, Metacritic scores | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) |
+| TMDB | Movies page, trailers, free-in-your-country rows, where to watch | [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) |
+| OMDb | IMDb, Rotten Tomatoes and Metacritic scores | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) |
 
-TVMaze, Wikipedia and the Internet Archive need no key. You *can* put keys in `js/config.js` so every visitor gets them, but anyone can read that file on a public site.
+**There are two ways to add them:**
+- **Per user (recommended):** open **Profile → Settings & API keys** and paste the keys. They are stored only in that browser.
+- **For every visitor:** set `tmdbApiKey` / `omdbApiKey` in [`js/config.js`](js/config.js). This exposes the keys publicly, so only use keys you are comfortable sharing.
 
-## Running it
+The *Where to watch* country defaults to South Africa (`ZA`). You can change it in Settings or in `js/config.js`.
 
-- **Quickest:** double-click `index.html`. Everything works except offline mode and installing.
-- **Full experience:** use VS Code's Live Server extension, or host on GitHub Pages.
+## Architecture
 
-### GitHub Pages
-1. Repo → **Settings → Pages** → Deploy from a branch → `main` / root → Save.
-2. The site appears at `https://ammara-tech.github.io/myflix/`.
-3. Open it in Chrome/Edge → Profile menu → **Install app** (iPhone: Share → Add to Home Screen).
+```mermaid
+flowchart LR
+    UI["Pages & UI<br/>(router, cards, modal, player)"] --> Store["store.js<br/>localStorage"]
+    UI --> Models["models.js<br/>one shape for every title"]
+    Models --> TVMaze & TMDB & Archive["Internet Archive"]
+    UI --> OMDb & Wiki["Wikipedia"]
+    UI --> Party["party.js"] --> PeerJS
+```
 
-After changing files, bump `CACHE_VERSION` in `sw.js` so installed copies update.
+- **No build step.** Scripts are plain deferred `<script>` files sharing one `MyFlix` namespace, so the app runs straight from disk. The script order in `index.html` matters.
+- **One title model.** TVMaze shows, TMDB movies and classic films are normalised into the same shape, so every card, row and pop-up works with any source.
+- **Hash routing.** `#/`, `#/tv`, `#/movies`, `#/classics`, `#/my-list`, `#/games`, `#/stats`, `#/search?q=` and `#/party/CODE`.
+- **Caching.** Slow lookups (Wikipedia, Internet Archive, OMDb) are cached in `localStorage`. The service worker caches the app shell and artwork.
+- **Resilient playback.** For each classic film, `api/archive.js` tries known Internet Archive items first, then searches by title and year, then picks the best MP4. The result is remembered for 30 days.
 
-## How the free films work
-
-`js/data/classics.js` lists each film's title, year, runtime, genres and description. When you press Play, `js/api/archive.js` asks the Internet Archive for that film's video files and picks the best MP4. It tries any known item IDs first, then searches by title and year. The answer is remembered for 30 days. If a copy fails to load, the player automatically tries another.
-
-To add a film, add an entry to `MyFlix.classics`. Only use films that are public domain or Creative Commons.
-
-## Project structure
+### Project structure
 
 ```
 myflix/
-├── index.html               Page shell: nav, dialogs, player, script order
-├── manifest.webmanifest     App name + icons for installing
-├── sw.js                    Service worker (offline cache)
-├── assets/                  Icons, favicon, "no poster" image
+├── index.html              App shell, navigation, dialogs, script order
+├── manifest.webmanifest    PWA metadata
+├── sw.js                   Service worker
+├── assets/                 App icons and placeholder artwork
 ├── css/
-│   ├── base.css             Design tokens (dark + light), buttons, chips, toast
-│   ├── nav.css              Top bar, menus, mobile tab bar, footer
-│   ├── billboard.css        Hero banner
-│   ├── rows.css             Rows, cards, hover previews, Top 10, grids
-│   ├── modal.css            More Info, mood picker, settings
-│   ├── player.css           Full-screen player + watch party
-│   ├── pages.css            Theatre, My List, tracker, stats
-│   └── games.css            Games page
+│   ├── base.css            Design tokens (dark + light), buttons, forms, toast
+│   ├── nav.css             Top bar, menus, mobile tab bar, footer
+│   ├── billboard.css       Hero banner
+│   ├── rows.css            Rows, cards, hover previews, Top 10, grids
+│   ├── modal.css           Title details, mood picker, settings
+│   ├── player.css          Full-screen player, watch party
+│   ├── pages.css           Theatre, services directory, My List, stats
+│   └── games.css           Games page
 └── js/
-    ├── theme.js             Light/dark (loads first)
-    ├── config.js            Optional keys, region
-    ├── icons.js             Lucide icon sprite
-    ├── data/                Classic films, genres + moods, quiz questions
-    ├── utils.js             Helpers (escaping, caching, toast…)
-    ├── store.js             Everything saved in localStorage
-    ├── models.js            Turns TVMaze/TMDB/classic data into one shape
-    ├── api/                 tvmaze, tmdb, omdb, wiki, archive
-    ├── ui/                  cards, billboard, details, player, mood, settings
-    ├── party.js             Watch party (PeerJS)
-    ├── recommend.js         "Because you saved…"
-    ├── tracker.js           Up next + new-episode bell
-    ├── router.js            #/ pages + navigation
-    ├── pages/               helpers, browse (Home/TV/Movies/Classics), library (My List/Search/Stats), games
-    ├── pwa.js               Install + service worker
-    └── main.js              Starts everything
+    ├── theme.js            Light/dark theme (loaded first)
+    ├── config.js           Optional keys and region
+    ├── icons.js            Bundled Lucide icon sprite
+    ├── data/               Classic films, free services, genres & moods, quiz questions
+    ├── utils.js            Helpers: escaping, caching, formatting, toast
+    ├── store.js            Saved data: list, episodes, progress, history, settings
+    ├── models.js           Normalises TVMaze / TMDB / classic titles
+    ├── api/                tvmaze · tmdb · omdb · wiki · archive
+    ├── ui/                 cards · billboard · details · player · mood · settings
+    ├── pages/              helpers · browse · library · games
+    ├── party.js            Watch party
+    ├── recommend.js        Recommendations
+    ├── tracker.js          Up next and new-episode notifications
+    ├── router.js           Routing and navigation
+    ├── pwa.js              Install prompt and service worker
+    └── main.js             Entry point
 ```
 
-Scripts are plain `<script defer>` files (not ES modules), so opening `index.html` from disk works. Keep the order in `index.html`.
+### Adding a classic film
+
+Add an entry to `MyFlix.classics` in [`js/data/classics.js`](js/data/classics.js):
+
+```js
+{ id: "my-film", title: "My Film", year: 1931, runtime: 85, genres: ["horror"],
+  licence: "Public domain", description: "One or two sentences in your own words." }
+```
+
+Optionally add `archiveIds: ["ArchiveItemId"]` to skip the search step. Only add films that are in the public domain or released under a Creative Commons licence.
+
+## Content and licensing
+
+- **Films that play inside MYFLIX** are public domain in the United States or licensed under Creative Commons. They stream from the Internet Archive.
+- **Other services** (Tubi, Pluto TV, Plex, The Roku Channel, Crackle, YouTube, Kanopy, Rakuten Viki) are licensed, ad-supported or library-funded platforms. MYFLIX only links to them, because they don't permit embedding. Availability differs by country.
+- **Unlicensed sources:** MYFLIX does not link to or embed streams from unlicensed sources.
+
+## Browser support
+
+Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. Watch parties use WebRTC.
+
+## Roadmap
+
+- [ ] Profiles (several people on one device)
+- [ ] Optional cloud sync for My List and the episode tracker
+- [ ] Subtitles for classic films where the Internet Archive provides them
+- [ ] Live TV channel guide
 
 ## Credits
 
-- TV data: [TVMaze](https://www.tvmaze.com/api) (CC BY-SA)
-- Movies: [TMDB](https://www.themoviedb.org/). This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability by JustWatch.
-- Scores: [OMDb](https://www.omdbapi.com/)
-- Facts: [Wikipedia](https://www.wikipedia.org/) (CC BY-SA)
-- Films: [Internet Archive](https://archive.org/details/feature_films)
-- Icons: [Lucide](https://lucide.dev) (ISC)
-- Fonts: Inter and Bebas Neue (Google Fonts)
+- TV data: [TVMaze](https://www.tvmaze.com/api), licensed CC BY-SA
+- Movie data: [TMDB](https://www.themoviedb.org/). *This product uses the TMDB API but is not endorsed or certified by TMDB.*
+- Streaming availability: [JustWatch](https://www.justwatch.com/), via TMDB
+- Scores: [OMDb API](https://www.omdbapi.com/)
+- Facts and posters: [Wikipedia](https://www.wikipedia.org/), licensed CC BY-SA
+- Films: [Internet Archive](https://archive.org/)
+- Icons: [Lucide](https://lucide.dev), ISC licence
+- Typefaces: [Inter](https://rsms.me/inter/) and [Bebas Neue](https://fonts.google.com/specimen/Bebas+Neue)
 - Watch party: [PeerJS](https://peerjs.com/)
 
-© 2026 Ammara Badat. Built for learning and portfolio use.
+MYFLIX is an independent portfolio project and is not affiliated with Netflix or any of the services above.
+
+## Author
+
+**Ammara Badat** · [@ammara-tech](https://github.com/ammara-tech)
+
+© 2026 Ammara Badat. All rights reserved.
