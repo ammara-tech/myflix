@@ -9,6 +9,14 @@
     const C = MyFlix.cards;
     const tmdb = MyFlix.tmdb;
 
+    // A Trakt row: shows how many people are watching each title right now.
+    function traktRow(title, load, subtitle = "What people are watching on Trakt right now") {
+        return C.createRow({
+            title, subtitle, hideIfEmpty: true, load,
+            cardOpts: t => (t.subtitle ? { showTitle: true, subtitle: t.subtitle } : {})
+        });
+    }
+
     function hero(view) {
         const el = document.createElement("section");
         MyFlix.billboard.skeleton(el);
@@ -32,6 +40,7 @@
         if (tmdb.enabled()) {
             list.append(C.createRow({ title: "Trending Now", load: () => tmdb.trending("all", "week").then(r => r.map(x => M.fromTmdb(x))) }));
         }
+        if (MyFlix.trakt.enabled()) list.append(traktRow("Trending Today", MyFlix.trakt.trendingAll));
         list.append(
             C.createRow({ title: "Top 10 TV Shows on MYFLIX", variant: "top10", load: H.topTen }),
             H.classicsRow(),
@@ -95,6 +104,10 @@
         const list = rows(view);
         list.append(
             C.createRow({ title: "Top 10 TV Shows Today", variant: "top10", load: H.topTen }),
+            ...(MyFlix.trakt.enabled() ? [
+                traktRow("Trending on Trakt", MyFlix.trakt.trendingShows),
+                traktRow("Most Anticipated Shows", MyFlix.trakt.anticipatedShows, "New and returning shows people can't wait for")
+            ] : []),
             C.createRow({ title: "On TV Tonight", hideIfEmpty: true, load: H.onTonight }),
             C.createRow({ title: "Still Airing", subtitle: "Shows with new episodes coming", load: async () => (await MyFlix.tvmaze.catalog()).filter(s => s.status === "Running").slice(0, 24).map(M.fromTvmaze) })
         );
@@ -143,10 +156,12 @@
         const mv = arr => arr.map(x => M.fromTmdb(x, "movie"));
         list.append(
             C.createRow({ title: "Trending Movies This Week", variant: "top10", load: () => tmdb.trending("movie", "week").then(r => mv(r).slice(0, 10)) }),
+            ...(MyFlix.trakt.enabled() ? [traktRow("Watching Right Now", MyFlix.trakt.trendingMovies)] : []),
             C.createRow({ title: "Popular in South Africa", load: () => tmdb.popularMovies().then(mv) }),
             C.createRow({ title: "In Cinemas Now", variant: "wide", load: () => tmdb.nowPlaying().then(mv) }),
             C.createRow({ title: "All-Time Greats", load: () => tmdb.topRatedMovies().then(mv) }),
-            C.createRow({ title: "Coming Soon", variant: "wide", load: () => tmdb.upcoming().then(mv) })
+            C.createRow({ title: "Coming Soon", variant: "wide", load: () => tmdb.upcoming().then(mv) }),
+            ...(MyFlix.trakt.enabled() ? [traktRow("Most Anticipated Movies", MyFlix.trakt.anticipatedMovies, "Saved to the most watchlists on Trakt")] : [])
         );
         ["action", "comedy", "horror", "scifi", "romance", "animation", "thriller", "documentary"].forEach(k => {
             const g = MyFlix.genreByKey(k);

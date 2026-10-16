@@ -135,9 +135,10 @@
         };
 
         out.innerHTML = `<p class="row-empty loading-dots">Searching</p>`;
-        const [tvRes, tmdbRes] = await Promise.allSettled([
+        const [tvRes, tmdbRes, animeRes] = await Promise.allSettled([
             MyFlix.tvmaze.search(q),
-            MyFlix.tmdb.enabled() ? MyFlix.tmdb.search(q) : Promise.resolve([])
+            MyFlix.tmdb.enabled() ? MyFlix.tmdb.search(q) : Promise.resolve([]),
+            MyFlix.anilist.search(q)
         ]);
         if (!live()) return;
         out.innerHTML = "";
@@ -146,7 +147,9 @@
         section("Free Classics", classics.map(M.fromClassic));
         section("TV Shows", shows);
         section("Movies", movies);
-        if (!classics.length && !shows.length && !movies.length) {
+        const animeHits = animeRes.status === "fulfilled" ? animeRes.value.map(M.fromAnilist) : [];
+        section("Anime", animeHits);
+        if (!classics.length && !shows.length && !movies.length && !animeHits.length) {
             out.innerHTML = `<div class="empty-state">${icon("search")}<h2>No matches for “${escapeHtml(q)}”</h2><p>Try a different title, or a genre like “comedy”.</p></div>`;
         }
         if (!MyFlix.tmdb.enabled()) out.appendChild(MyFlix.pageHelpers.tmdbCta("Add a free TMDB key to include movies in your search results."));

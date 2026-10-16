@@ -62,6 +62,7 @@
             watch_region: MyFlix.store.getSetting("region") || "ZA"
         }, { cacheMinutes: 720 }).then(d => d.results || []),
         movie: id => get(`/movie/${id}`, { append_to_response: "credits,videos,watch/providers,external_ids,similar" }),
+        movieBasic: id => get(`/movie/${id}`, {}, { cacheMinutes: 720 }),
         tv: id => get(`/tv/${id}`, { append_to_response: "external_ids,watch/providers,videos" }),
         // Find TMDB's id for a show we only know from TVMaze (via IMDb id).
         findByImdb: imdb => cached(`tmdbfind:${imdb}`, 30, () => get(`/find/${imdb}`, { external_source: "imdb_id" })),

@@ -57,10 +57,12 @@
         const bits = [];
         if (t.rating) bits.push(`<span class="match">${icon("star")} ${escapeHtml(t.rating)} rating</span>`);
         if (t.year) bits.push(`<span>${escapeHtml(t.year)}${info.endYear && info.endYear !== t.year ? `–${escapeHtml(info.endYear)}` : ""}</span>`);
-        if (info.seasons) bits.push(`<span>${info.seasons} Season${info.seasons > 1 ? "s" : ""}</span>`);
+        if (t.kind === "anime" && info.episodes) bits.push(`<span>${info.episodes} Episode${info.episodes > 1 ? "s" : ""}</span>`);
+        else if (info.seasons) bits.push(`<span>${info.seasons} Season${info.seasons > 1 ? "s" : ""}</span>`);
         else if (t.runtime) bits.push(`<span>${escapeHtml(formatRuntime(t.runtime))}</span>`);
         bits.push(`<span class="pill">HD</span>`);
         if (t.kind === "classic") bits.push(`<span class="pill pill--free">Free</span>`);
+        if (info.format) bits.push(`<span class="pill">${escapeHtml(info.format.replace("_", " "))}</span>`);
         return `<p class="modal-meta">${bits.join("")}</p>`;
     }
 
@@ -68,6 +70,9 @@
         const rows = [];
         if (info.cast?.length) rows.push(`<p><span class="label">Cast:</span> ${info.cast.slice(0, 5).map(c => escapeHtml(c.name)).join(", ")}</p>`);
         if (t.genres?.length) rows.push(`<p><span class="label">Genres:</span> ${t.genres.map(escapeHtml).join(", ")}</p>`);
+        if (info.studio) rows.push(`<p><span class="label">Studio:</span> ${escapeHtml(info.studio)}</p>`);
+        if (info.source) rows.push(`<p><span class="label">Based on:</span> ${escapeHtml(info.source)}</p>`);
+        if (t.altName) rows.push(`<p><span class="label">Original title:</span> ${escapeHtml(t.altName)}</p>`);
         if (info.director) rows.push(`<p><span class="label">Director:</span> ${escapeHtml(info.director)}</p>`);
         if (info.network) rows.push(`<p><span class="label">Network:</span> ${escapeHtml(info.network)}</p>`);
         if (info.status) rows.push(`<p><span class="label">Status:</span> ${escapeHtml(info.status)}</p>`);
@@ -79,7 +84,7 @@
         if (!ep?.airstamp || new Date(ep.airstamp) < Date.now()) return "";
         return `<div class="next-episode">${icon("calendar-clock")}<div>
             <strong>New episode ${escapeHtml(timeUntil(ep.airstamp))}</strong>
-            <span>S${ep.season} E${ep.number} · “${escapeHtml(ep.name)}” · ${new Date(ep.airstamp).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+            <span>${ep.season ? `S${ep.season} E${ep.number} · “${escapeHtml(ep.name)}”` : `Episode ${ep.number}`} · ${new Date(ep.airstamp).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
         </div></div>`;
     }
 
@@ -94,13 +99,15 @@
     }
 
     // ---------- ratings ----------
-    function ratingsHtml(t, info, omdbRatings) {
+    function ratingsHtml(t, info, omdbRatings, mal) {
         const chips = [];
+        if (info.anilistScore) chips.push(chip("AniList", `${info.anilistScore}%`, info.anilistScore));
+        if (mal?.score) chips.push(chip(`MyAnimeList${mal.rank ? ` · #${mal.rank}` : ""}`, `${mal.score}/10`, mal.score * 10));
         if (info.tvmazeRating) chips.push(chip("TVMaze", `${info.tvmazeRating}/10`, info.tvmazeRating * 10));
         if (info.tmdbRating) chips.push(chip("TMDB", `${info.tmdbRating}/10`, info.tmdbRating * 10));
         (omdbRatings || []).forEach(r => chips.push(chip(r.source, r.value, r.score)));
         let hint = "";
-        if (!MyFlix.omdb.enabled() && t.kind !== "classic") hint = `<p class="hint-line">${icon("key-round")} Add a free OMDb key in <button type="button" class="link" data-act="settings">Settings</button> to see IMDb, Rotten Tomatoes and Metacritic scores.</p>`;
+        if (!MyFlix.omdb.enabled() && t.kind !== "classic" && t.kind !== "anime") hint = `<p class="hint-line">${icon("key-round")} Add a free OMDb key in <button type="button" class="link" data-act="settings">Settings</button> to see IMDb, Rotten Tomatoes and Metacritic scores.</p>`;
         if (!chips.length) return hint || "";
         return `<div class="score-chips">${chips.join("")}</div>${hint}`;
     }
@@ -111,7 +118,16 @@
     }
 
     // ---------- where to watch ----------
-    function providersHtml(t, providers) {
+    function providersHtml(t, providers, info = {}) {
+        if (t.kind === "anime") {
+            const links = info.animeLinks || [];
+            if (!links.length) return `<p class="muted">No official streaming links listed yet.</p>`;
+            return `<div class="provider-group"><span class="label">Official streaming</span><div class="provider-logos">
+                ${links.map(l => `<a class="provider provider--text" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">
+                    <span class="service-dot" style="--c:${l.color || "#444"};--ink:#fff">${escapeHtml(l.site.charAt(0))}</span>
+                    <span>${escapeHtml(l.site)}${l.language ? ` <small class="muted">${escapeHtml(l.language)}</small>` : ""}</span>${icon("external-link", "provider-out")}</a>`).join("")}
+            </div></div><p class="attribution">Links from AniList</p>`;
+        }
         if (t.kind === "classic") {
             return `<div class="provider-free">${icon("sparkles")}<div><strong>Free to watch right here</strong><span>Streamed from the Internet Archive · ${escapeHtml(t.licence)}</span></div></div>`;
         }
@@ -245,6 +261,7 @@
                 .filter(f => f.id !== t.id && f.genres.some(g => t.film.genres.includes(g)))
                 .slice(0, 9).map(MyFlix.models.fromClassic);
         }
+        if (t.kind === "anime") return (info.recommendations || []).slice(0, 9);
         if (t.kind === "movie" && info.similar?.length) return info.similar.slice(0, 9).map(m => MyFlix.models.fromTmdb(m, "movie"));
         if (t.kind === "tv" || t.kind === "tmdbtv") {
             const all = await MyFlix.tvmaze.catalog();
@@ -313,6 +330,30 @@
             }
         }
 
+        if (t.kind === "anime") {
+            const a = await MyFlix.anilist.details(t.id);
+            t = { ...MyFlix.models.fromAnilist(a) };
+            info.backdrop = a.bannerImage;
+            info.poster = a.coverImage?.extraLarge;
+            info.cast = (a.characters?.edges || []).map(e => ({
+                name: e.node.name.full,
+                role: [e.role === "MAIN" ? "Main" : "Supporting", e.voiceActors?.[0]?.name.full].filter(Boolean).join(" · "),
+                photo: e.node.image?.medium
+            }));
+            info.trailer = a.trailer?.site === "youtube" ? a.trailer.id : null;
+            info.studio = t.studio;
+            info.source = a.source ? a.source.replace(/_/g, " ").toLowerCase().replace(/^\w/, c => c.toUpperCase()) : null;
+            info.status = a.status ? a.status.replace(/_/g, " ").toLowerCase().replace(/^\w/, c => c.toUpperCase()) : null;
+            info.episodes = a.episodes;
+            info.format = a.format;
+            info.anilistScore = a.averageScore;
+            info.malId = a.idMal;
+            info.next = a.nextAiringEpisode ? { airstamp: new Date(a.nextAiringEpisode.airingAt * 1000).toISOString(), number: a.nextAiringEpisode.episode } : null;
+            info.animeLinks = (a.externalLinks || []).filter(l => l.type === "STREAMING");
+            info.recommendations = (a.recommendations?.nodes || []).map(n => n.mediaRecommendation).filter(Boolean).map(MyFlix.models.fromAnilist);
+            t.rating = null; // shown as AniList % in Ratings instead
+        }
+
         if (t.kind === "movie") {
             const m = await MyFlix.tmdb.movie(t.id);
             t = { ...MyFlix.models.fromTmdb(m, "movie") };
@@ -346,13 +387,14 @@
                 </div>
                 ${t.kind === "tv" ? section("episodes", "Episodes", episodesShell(info)) : ""}
                 ${section("ratings", "Ratings", loading)}
-                ${section("watch", "Where to watch", providersHtml(t, info.providers))}
+                ${section("watch", "Where to watch", providersHtml(t, info.providers, info))}
                 ${info.cast?.length ? section("cast", "Cast", castHtml(info.cast)) : ""}
                 ${section("trivia", "Did you know?", loading)}
                 ${section("similar", "More like this", loading)}
             </div>`;
         panel.querySelectorAll("img").forEach(img => safeImg(img, ""));
         MyFlix.cards.refreshListButtons();
+        if (!info.loading) MyFlix.billboard.applyLogo(panel.querySelector(".modal-title"), t);
     }
 
     async function fillAsync(t, info, token) {
@@ -367,10 +409,13 @@
         }
 
         // Ratings
-        MyFlix.omdb.ratings(info.imdb).catch(() => []).then(r => {
+        Promise.all([
+            MyFlix.omdb.ratings(info.imdb).catch(() => []),
+            t.kind === "anime" ? MyFlix.jikan.stats(info.malId).catch(() => null) : null
+        ]).then(([r, mal]) => {
             if (!live()) return;
             const el = panel.querySelector('[data-section="ratings"]');
-            const html = ratingsHtml(t, info, r);
+            const html = ratingsHtml(t, info, r, mal);
             if (html) el.querySelector("h3").insertAdjacentHTML("afterend", html);
             el.querySelector(".loading-dots")?.remove();
             if (!html) el.remove();
@@ -411,7 +456,7 @@
     async function open(title) {
         const token = ++openToken;
         current = { t: title, info: {} };
-        renderShell(title, { cast: [] });
+        renderShell(title, { cast: [], loading: true });
         panel.querySelector(".modal-body").classList.add("is-loading");
         if (!dialog.open) {
             dialog.showModal();
@@ -482,6 +527,7 @@
         } else {
             hero.outerHTML = heroHtml(current.t, current.info);
             panel.querySelectorAll(".modal-hero img").forEach(img => safeImg(img, ""));
+            MyFlix.billboard.applyLogo(panel.querySelector(".modal-title"), current.t);
         }
     }
 

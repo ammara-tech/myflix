@@ -37,6 +37,8 @@
             </div>
             ${keyField("tmdbKey", "TMDB", "Unlocks the Movies page, trailers, backdrops and “Where to watch”.", "https://www.themoviedb.org/settings/api", MyFlix.tmdb.enabled())}
             ${keyField("omdbKey", "OMDb", "Adds IMDb, Rotten Tomatoes and Metacritic scores.", "https://www.omdbapi.com/apikey.aspx", MyFlix.omdb.enabled())}
+            ${keyField("traktKey", "Trakt", "Adds “Trending Today” rows showing what people are watching right now. Create an app, then paste its Client ID.", "https://trakt.tv/oauth/applications/new", MyFlix.trakt.enabled())}
+            ${keyField("fanartKey", "fanart.tv", "Shows stylised title logos on hero banners instead of plain text.", "https://fanart.tv/get-an-api-key/", MyFlix.fanart.enabled())}
             <div class="setting">
                 <label for="set-region">Where to watch country</label>
                 <select id="set-region">${Object.entries(REGIONS).map(([k, v]) => `<option value="${k}" ${k === region ? "selected" : ""}>${v}</option>`).join("")}</select>
@@ -49,7 +51,7 @@
                 <div><label>Reset MYFLIX</label><p class="muted">Clears My List, episodes, stats, scores and keys on this device.</p></div>
                 <button type="button" class="btn btn--small btn--danger" data-act="reset">Reset</button>
             </div>
-            <p class="muted small">Keys are stored only in this browser. Data from TVMaze, TMDB, OMDb, Wikipedia and the Internet Archive.</p>`;
+            <p class="muted small">Keys are stored only in this browser. Data from TVMaze, TMDB, OMDb, Trakt, fanart.tv, AniList, Jikan, Wikipedia and the Internet Archive.</p>`;
     }
 
     async function saveKey(id, value) {
@@ -59,14 +61,19 @@
         store.setSetting(id, value);
         msg.textContent = "Checking…";
         try {
-            if (id === "tmdbKey") await MyFlix.tmdb.testKey();
-            else await MyFlix.omdb.testKey(value);
-            toast(`${id === "tmdbKey" ? "TMDB" : "OMDb"} connected`, "circle-check");
+            const tests = {
+                tmdbKey: () => MyFlix.tmdb.testKey(),
+                omdbKey: () => MyFlix.omdb.testKey(value),
+                traktKey: () => MyFlix.trakt.testKey(),
+                fanartKey: () => MyFlix.fanart.testKey(value)
+            };
+            await tests[id]();
+            toast(`${{ tmdbKey: "TMDB", omdbKey: "OMDb", traktKey: "Trakt", fanartKey: "fanart.tv" }[id]} connected`, "circle-check");
             render();
             MyFlix.router.refresh();
         } catch (err) {
             store.setSetting(id, previous || "");
-            msg.textContent = err.status === 401 || /invalid/i.test(err.message)
+            msg.textContent = err.status === 401 || err.status === 403 || /invalid/i.test(err.message)
                 ? "That key didn't work. Double-check it and try again."
                 : "Couldn't reach the service to check the key. Try again later.";
         }
