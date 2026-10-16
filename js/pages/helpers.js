@@ -57,7 +57,9 @@
             .sort((a, b) => b.updatedAt - a.updatedAt)
             .map(p => {
                 const film = MyFlix.classics.find(f => f.id === p.id);
-                return film ? { title: M.fromClassic(film), progress: p.time / p.duration, subtitle: p.duration - p.time < 60 ? "Less than a minute left" : `${Math.round((p.duration - p.time) / 60)}m left` } : null;
+                const t = film ? M.fromClassic(film)
+                    : p.meta?.kind === "archive" ? M.fromArchive({ identifier: p.id, title: p.meta.name, year: p.meta.year }) : null;
+                return t ? { title: t, progress: p.time / p.duration, subtitle: p.duration - p.time < 60 ? "Less than a minute left" : `${Math.round((p.duration - p.time) / 60)}m left` } : null;
             }).filter(Boolean);
         let eps = [];
         try {

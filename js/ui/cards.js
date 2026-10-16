@@ -10,7 +10,7 @@
         info: title => MyFlix.details.open(title),
         play: title => MyFlix.player.play(title),
         toggleList: title => MyFlix.store.list.toggle(title),
-        canPlay: title => title.kind === "classic"
+        canPlay: title => Boolean(title.film)
     };
     MyFlix.actions = actions;
 

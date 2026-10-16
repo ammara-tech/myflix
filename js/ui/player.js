@@ -121,7 +121,7 @@
 
     // ---------- open / play ----------
     async function play(title, { startAt = null, fromParty = false } = {}) {
-        if (title.kind !== "classic") return MyFlix.details.open(title);
+        if (!title.film) return MyFlix.details.open(title);
         current = title;
         retried = false;
         watchedSeconds = 0;
@@ -206,7 +206,14 @@
 
     function nextTitle() {
         if (!current) return null;
+        // Episodes / cartoons carry their row as a queue: play the next one.
+        if (current.queue?.length) {
+            const i = current.queue.findIndex(t => t.key === current.key);
+            const next = current.queue[(i + 1) % current.queue.length];
+            return next && next.key !== current.key ? { ...next, queue: current.queue } : null;
+        }
         const g = current.film.genres[0];
+        if (!g) return null;
         const same = MyFlix.classics.filter(f => f.genres.includes(g));
         const i = same.findIndex(f => f.id === current.id);
         const next = same[(i + 1) % same.length];
@@ -315,7 +322,7 @@
 
     function saveProgress() {
         if (current && video.duration && video.currentTime > 5) {
-            store.progress.set(current.id, video.currentTime, video.duration);
+            store.progress.set(current.id, video.currentTime, video.duration, { kind: current.kind, name: current.name, year: current.year });
         }
     }
 

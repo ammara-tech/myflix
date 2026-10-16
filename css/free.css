@@ -1,0 +1,558 @@
+/* ==========================
+   WATCH FREE: tabs, TV show pages, Retro TV
+   (new elements only — uses the existing design tokens, buttons, chips,
+   rows and service cards; nothing here restyles existing components)
+========================== */
+
+/* sub-pages (Cartoons, TV, Docs, Anime, Retro) have no billboard */
+.view--free-sub {
+    padding-top: calc(var(--nav-h) + 20px);
+}
+
+.free-head .page-header {
+    padding-bottom: 6px;
+}
+
+.free-sub {
+    padding: 0 var(--page-x) 16px;
+    max-width: 760px;
+}
+
+/* ---------- tabs ---------- */
+.free-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 var(--page-x) 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.free-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.free-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-2);
+    text-decoration: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+}
+
+.free-tab .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.free-tab:hover {
+    color: var(--text);
+    border-color: var(--text);
+}
+
+.free-tab.is-on {
+    color: var(--bg);
+    background: var(--text);
+    border-color: var(--text);
+}
+
+/* on the Films tab the bar sits just under the billboard */
+.free-tabs--floating {
+    position: relative;
+    z-index: 4;
+}
+
+.rows--free {
+    margin-top: 4px;
+}
+
+/* ---------- TV shows ---------- */
+.series-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 14px;
+    padding: 0 var(--page-x);
+}
+
+.series-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.series-card:hover {
+    transform: translateY(-3px);
+}
+
+.series-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: linear-gradient(160deg, #2b2b2b, #0d0d0d);
+}
+
+.series-art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.series-name {
+    position: relative;
+    padding: 0 16px;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    line-height: 1;
+    text-align: center;
+    color: #fff;
+}
+
+.series-art img + .series-name {
+    display: none;
+}
+
+.series-body {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    padding: 12px 14px 16px;
+}
+
+.series-desc {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.series-page .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 var(--page-x) 16px;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.series-hero {
+    padding: 0 var(--page-x) 8px;
+    max-width: 760px;
+}
+
+.series-hero h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    margin: 0 0 6px;
+}
+
+.series-hero p {
+    margin-bottom: 10px;
+}
+
+.series-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.anime-free {
+    margin-top: 30px;
+}
+
+/* ---------- Retro TV ---------- */
+.retro-room {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+    padding: 0 var(--page-x);
+}
+
+.tv-set {
+    max-width: 920px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.tv-cabinet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 18px;
+    padding: 22px;
+    border-radius: 26px;
+    background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 3px, transparent 3px 9px),
+        linear-gradient(160deg, #6b4423, #3e2512 70%, #2c1a0c);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -6px 18px rgba(0, 0, 0, 0.5),
+        0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.tv-screen-wrap {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 18% / 14%;
+    background: #050505;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 0 0 10px #1a1a1a, 0 0 0 12px #000;
+}
+
+.retro-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    filter: saturate(0.85) contrast(1.05);
+}
+
+.retro-static {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.retro-static.show {
+    opacity: 0.9;
+}
+
+.retro-scan {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.retro-osd {
+    position: absolute;
+    top: 8%;
+    right: 9%;
+    display: grid;
+    justify-items: end;
+    gap: 2px;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    color: #7CFC00;
+    text-shadow: 0 0 6px rgba(124, 252, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.retro-osd.show {
+    opacity: 1;
+}
+
+.osd-num {
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.osd-name {
+    font-size: clamp(0.7rem, 1.2vw, 0.95rem);
+}
+
+.retro-poweroverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    padding: 20px;
+    text-align: center;
+    color: #bbb;
+    background: radial-gradient(circle, #141414, #000);
+}
+
+.retro-poweroverlay p {
+    max-width: 320px;
+    font-size: 0.85rem;
+}
+
+.tv-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 8px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #2a1a0d, #1a0f07);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.tv-brand {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    color: var(--red);
+}
+
+.tv-speaker {
+    width: 80%;
+    height: 90px;
+    border-radius: 8px;
+    background: repeating-linear-gradient(0deg, #0b0703 0 3px, #3a2615 3px 6px);
+}
+
+.tv-knobs {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+}
+
+.knob-group {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+}
+
+.knob-btn {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: #ddd;
+    background: radial-gradient(circle at 35% 30%, #5a5a5a, #1b1b1b);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.knob-btn .icon {
+    transform: rotate(90deg);
+}
+
+.ch-display {
+    min-width: 54px;
+    padding: 4px 8px;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #ff3b30;
+    background: #120000;
+    border-radius: 4px;
+    text-shadow: 0 0 6px rgba(255, 59, 48, 0.8);
+}
+
+.knob--decade {
+    --turn: 0deg;
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d7b98a, #7a5a2e);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    transform: rotate(var(--turn));
+    transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.knob-mark {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 4px;
+    height: 16px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: #2a1a0d;
+}
+
+.power-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #444, #111);
+}
+
+.power-led {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3a0000;
+}
+
+.power-led.on {
+    background: #ff3b30;
+    box-shadow: 0 0 10px #ff3b30;
+}
+
+.tv-legs {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16%;
+}
+
+.tv-legs span {
+    width: 14px;
+    height: 46px;
+    border-radius: 0 0 6px 6px;
+    background: linear-gradient(90deg, #2c1a0c, #4a2e15);
+}
+
+.retro-guide {
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.retro-guide h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+}
+
+.decade-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.guide-list {
+    display: grid;
+    gap: 4px;
+}
+
+.guide-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    text-align: left;
+    border-radius: var(--radius);
+    color: var(--text-2);
+}
+
+.guide-item:hover {
+    background: var(--surface-2);
+}
+
+.guide-item.is-on {
+    color: var(--text);
+    background: var(--surface-2);
+    box-shadow: inset 3px 0 0 var(--red);
+}
+
+.guide-num {
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    color: var(--text-dim);
+}
+
+.guide-item .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.now-on {
+    display: grid;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.now-on-title {
+    font-size: 0.95rem;
+}
+
+.now-on-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.retro:not(.is-on) .retro-video {
+    opacity: 0;
+}
+
+@media (max-width: 1000px) {
+    .retro-room {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .tv-cabinet {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .tv-panel {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 14px;
+    }
+
+    .tv-speaker {
+        display: none;
+    }
+
+    .tv-knobs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tv-brand {
+        font-size: 1.1rem;
+    }
+
+    .knob-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .knob--decade {
+        width: 42px;
+        height: 42px;
+    }
+
+    .tv-panel {
+        gap: 8px;
+        padding: 8px 10px;
+    }
+
+    .knob-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .knob-btn .icon {
+        transform: none;
+    }
+
+    .tv-legs {
+        display: none;
+    }
+}

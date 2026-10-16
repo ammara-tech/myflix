@@ -131,6 +131,9 @@
                     <span>${escapeHtml(l.site)}${l.language ? ` <small class="muted">${escapeHtml(l.language)}</small>` : ""}</span>${icon("external-link", "provider-out")}</a>`).join("")}
             </div></div><p class="attribution">Links from AniList</p>`;
         }
+        if (t.kind === "archive") {
+            return `<div class="provider-free">${icon("sparkles")}<div><strong>Free to watch right here</strong><span>From the <a href="${escapeHtml(MyFlix.archive.page(t.id))}" target="_blank" rel="noopener">Internet Archive</a>'s public-domain collections</span></div></div>`;
+        }
         if (t.kind === "classic") {
             return `<div class="provider-free">${icon("sparkles")}<div><strong>Free to watch right here</strong><span>Streamed from the Internet Archive · ${escapeHtml(t.licence)}</span></div></div>`;
         }
@@ -259,6 +262,7 @@
 
     // ---------- "More like this" ----------
     async function similarTitles(t, info) {
+        if (t.kind === "archive") return (t.queue || []).filter(x => x.key !== t.key).slice(0, 12);
         if (t.kind === "classic") {
             return MyFlix.classics
                 .filter(f => f.id !== t.id && f.genres.some(g => t.film.genres.includes(g)))
@@ -331,6 +335,19 @@
                     }
                 } catch { /* optional */ }
             }
+        }
+
+        if (t.kind === "archive") {
+            const queue = t.queue;
+            try {
+                const m = await MyFlix.archive.meta(t.id);
+                const first = v => (Array.isArray(v) ? v[0] : v);
+                t = { ...MyFlix.models.fromArchive({ identifier: t.id, title: first(m.title) || t.name, year: first(m.year), date: first(m.date), description: m.description, runtime: first(m.runtime) }), queue };
+                const subjects = [].concat(m.subject || []).flatMap(x => String(x).split(/[;,]/)).map(x => x.trim()).filter(Boolean);
+                t.genres = subjects.slice(0, 4);
+                info.network = first(m.creator) || first(m.publisher) || null;
+            } catch { /* show what we have */ }
+            info.poster = MyFlix.archive.thumb(t.id);
         }
 
         if (t.kind === "anime") {
@@ -424,8 +441,10 @@
             if (!html) el.remove();
         });
 
-        // Wikipedia trivia (and a poster for classics)
-        MyFlix.wiki.summary(t.name, t.year, t.kind).catch(() => null).then(w => {
+        // Wikipedia trivia (and a poster for classics). Archive uploads skip it:
+        // their titles rarely match a Wikipedia article.
+        if (t.kind === "archive") panel.querySelector('[data-section="trivia"]')?.remove();
+        else MyFlix.wiki.summary(t.name, t.year, t.kind).catch(() => null).then(w => {
             if (!live()) return;
             const el = panel.querySelector('[data-section="trivia"]');
             el.innerHTML = `<h3>Did you know?</h3>${triviaHtml(w)}`;
@@ -442,7 +461,7 @@
             if (!live()) return;
             const el = panel.querySelector('[data-section="similar"]');
             if (!list.length) { el.remove(); return; }
-            el.innerHTML = "<h3>More like this</h3>";
+            el.innerHTML = `<h3>${t.kind === "archive" ? "More from this row" : "More like this"}</h3>`;
             el.appendChild(MyFlix.cards.createGrid(list, "poster"));
         });
     }
