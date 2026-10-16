@@ -77,6 +77,9 @@
         if (info.network) rows.push(`<p><span class="label">Network:</span> ${escapeHtml(info.network)}</p>`);
         if (info.status) rows.push(`<p><span class="label">Status:</span> ${escapeHtml(info.status)}</p>`);
         if (t.licence) rows.push(`<p><span class="label">Licence:</span> ${escapeHtml(t.licence)}</p>`);
+        const subs = t.film?.subtitles;
+        if (subs?.length) rows.push(`<p><span class="label">Subtitles:</span> ${subs.slice(0, 3).map(s => escapeHtml(s.label)).join(", ")}${subs.length > 3 ? ` +${subs.length - 3} more` : ""}</p>`);
+        else if (t.kind === "classic") rows.push(`<p><span class="label">Subtitles:</span> Load your own .srt file in the player (CC)</p>`);
         return rows.join("");
     }
 

@@ -50,9 +50,12 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
 - Light and dark themes, with consistent line iconography throughout
 
 ### Watch free
-- **The MYFLIX Theatre**: 33 public-domain and Creative Commons films, with at least two per genre. Pick a genre, pick a film, and it plays in a full-screen player.
+- **The MYFLIX Theatre**: 88 public-domain and Creative Commons films across 16 genres, including musicals. Pick a genre, pick a film, and it plays in a full-screen player.
+- **New to the public domain**: 1930 films that became free in 2026, such as *All Quiet on the Western Front*, *Animal Crackers* and John Wayne's *The Big Trail*
+- **Collections**: Hollywood Favourites, Keaton, Chaplin & Lloyd, Hitchcock Before Hollywood, Vincent Price Nights, Cult Favourites, Song & Dance, Open Movies and more
 - **The player**:
   - Resume where you left off, skip ±10 seconds, use keyboard shortcuts
+  - **Subtitles** (CC button or the C key): official subtitle files when a film has them (e.g. *Tears of Steel* in 10 languages), or load your own `.srt`/`.vtt` from your device (saved for next time). Adjustable size, background and timing.
   - "Up next" autoplay at the end of a film
   - If a copy fails to load, it automatically tries another
 - **Free in your country**: rows of movies and shows that are free (or free with ads) where you live, grouped by service. The data is live from JustWatch via TMDB.
@@ -200,11 +203,11 @@ Add an entry to `MyFlix.classics` in [`js/data/classics.js`](js/data/classics.js
   licence: "Public domain", description: "One or two sentences in your own words." }
 ```
 
-Optionally add `archiveIds: ["ArchiveItemId"]` to skip the search step. Only add films that are in the public domain or released under a Creative Commons licence.
+Optionally add `archiveIds: ["ArchiveItemId"]` to skip the search step, `direct: "https://…/film.mp4"` for a film hosted elsewhere, and `subtitles: [{ lang: "en", label: "English", url: "https://…/film.srt" }]`. Subtitle URLs must allow cross-site requests (CORS). Otherwise viewers get a download link and can load the file themselves. Only add films that are in the public domain or released under a Creative Commons licence.
 
 ## Content and licensing
 
-- **Films that play inside MYFLIX** are public domain in the United States or licensed under Creative Commons. They stream from the Internet Archive.
+- **Films that play inside MYFLIX** are public domain in the United States or licensed under Creative Commons. They stream from the Internet Archive, or from the Blender Foundation for its open movies. Public-domain status is country-specific, and a few films (such as *Steamboat Willie*) involve characters that are still trademarked.
 - **Other services** (Tubi, Pluto TV, Plex, The Roku Channel, Crackle, YouTube, Kanopy, Rakuten Viki) are licensed, ad-supported or library-funded platforms. MYFLIX only links to them, because they don't permit embedding. Availability differs by country.
 - **Unlicensed sources:** MYFLIX does not link to or embed streams from unlicensed sources.
 
@@ -216,7 +219,7 @@ Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. Wat
 
 - [ ] Profiles (several people on one device)
 - [ ] Optional cloud sync for My List and the episode tracker
-- [ ] Subtitles for classic films where the Internet Archive provides them
+- [ ] Search a subtitle database (e.g. OpenSubtitles) for classics without bundled subtitles
 - [ ] Live TV channel guide
 - [ ] Anime episode tracker (AniList progress sync)
 

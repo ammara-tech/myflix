@@ -63,6 +63,7 @@
                     <span class="player-now"></span>
                     <span class="spacer"></span>
                     <button type="button" class="player-btn" data-act="next" aria-label="Next film" title="Next film">${icon("skip-forward")}</button>
+                    <button type="button" class="player-btn player-btn--cc" data-act="subs" aria-label="Subtitles" title="Subtitles (C)" aria-haspopup="true" aria-expanded="false"><span class="cc">CC</span></button>
                     <button type="button" class="player-btn" data-act="party" aria-label="Watch party" title="Watch party">${icon("users")}</button>
                     <button type="button" class="player-btn" data-act="fullscreen" aria-label="Full screen" data-fs-btn>${icon("maximize")}</button>
                 </div>
@@ -112,6 +113,7 @@
             video.muted = video.volume === 0;
         });
         document.addEventListener("keydown", onKey);
+        MyFlix.subtitles.init(root, video);
         document.addEventListener("fullscreenchange", () => {
             els.fsBtn.innerHTML = icon(document.fullscreenElement ? "minimize" : "maximize");
         });
@@ -139,6 +141,7 @@
             if (current !== title) return;
             current.source = source;
             video.src = source.url;
+            MyFlix.subtitles.attach(title, source);
             video.poster = "";
             els.loading.classList.add("hidden");
 
@@ -178,6 +181,7 @@
         root.classList.add("hidden");
         document.documentElement.classList.remove("player-open");
         current = null;
+        MyFlix.subtitles.detach();
         store.emit("progress");
         if (MyFlix.party.active()) MyFlix.party.leave();
     }
@@ -251,6 +255,7 @@
             arrowup: () => { video.volume = Math.min(1, video.volume + 0.1); video.muted = false; },
             arrowdown: () => { video.volume = Math.max(0, video.volume - 0.1); },
             f: toggleFullscreen, m: () => { video.muted = !video.muted; },
+            c: () => MyFlix.subtitles.toggle(),
             escape: () => { if (!document.fullscreenElement) close(); }
         }[k];
         if (handled) {
