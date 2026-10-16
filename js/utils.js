@@ -62,5 +62,28 @@
         setTimeout(() => el.classList.remove(className), ms);
     }
 
-    MyFlix.utils = { escapeHtml, normalizeAnswer, posterUrl, yearOf, storage, flashClass, PLACEHOLDER_POSTER };
+    // TVMaze summaries contain HTML like "<p><b>Lost</b> is...</p>".
+    // Turn that into plain text (safe to escape and display).
+    function stripHtml(html) {
+        if (!html) return "";
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+    }
+
+    // Small pop-up message at the bottom of the screen.
+    let toastEl, toastTimer;
+    function toast(message) {
+        if (!toastEl) {
+            toastEl = document.createElement("div");
+            toastEl.className = "toast";
+            toastEl.setAttribute("role", "status");
+            document.body.appendChild(toastEl);
+        }
+        toastEl.textContent = message;
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2500);
+    }
+
+    MyFlix.utils = { escapeHtml, normalizeAnswer, posterUrl, yearOf, storage, flashClass, stripHtml, toast, PLACEHOLDER_POSTER };
 })(window.MyFlix = window.MyFlix || {});

@@ -13,9 +13,9 @@
     justify-content: space-between;
     gap: 14px;
     padding: 16px 28px;
-    background: rgba(20, 20, 20, 0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border);
 }
 
 .logo {
@@ -24,18 +24,20 @@
     letter-spacing: 2px;
 }
 
-.nav-center {
+.nav-center,
+.nav-right {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
 }
 
 #search-input {
     width: 320px;
     padding: 12px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 4px;
-    background: #333;
+    background: var(--surface-3);
     color: var(--text);
 }
 
@@ -59,9 +61,9 @@
     padding: 50px 30px;
     text-align: center;
     border-radius: 14px;
-    background: linear-gradient(135deg, rgba(229, 9, 20, 0.12), rgba(0, 0, 0, 0.85));
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.12), var(--panel-b));
     border: 1px solid var(--border);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    box-shadow: var(--shadow-lg);
 }
 
 .hero-card h2 {
@@ -70,7 +72,7 @@
 }
 
 .hero-card p {
-    color: #ccc;
+    color: var(--text-muted);
 }
 
 /* ---------- section cards ---------- */
@@ -80,9 +82,9 @@
     margin: 35px auto;
     padding: 22px;
     border-radius: 18px;
-    background: linear-gradient(135deg, rgba(25, 25, 25, 0.9), rgba(10, 10, 10, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, var(--panel-a), var(--panel-b));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
     transition: box-shadow 0.3s ease;
 }
 
@@ -116,33 +118,24 @@
 }
 
 .netflix-card:hover {
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(229, 9, 20, 0.08);
-}
-
-.results-card {
-    background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(12, 12, 12, 0.95));
+    box-shadow: var(--shadow-lg), 0 0 25px rgba(229, 9, 20, 0.08);
 }
 
 .mylist-card {
-    background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(5, 5, 5, 0.98));
-    border-color: rgba(229, 9, 20, 0.08);
-}
-
-.mylist-card:hover {
-    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.9), 0 0 30px rgba(229, 9, 20, 0.12);
+    border-color: rgba(229, 9, 20, 0.12);
 }
 
 .card-header {
     margin-bottom: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border);
 }
 
 .card-header h2 {
     margin: 0;
     font-size: 20px;
     letter-spacing: 1px;
-    color: #f1f1f1;
+    color: var(--text);
 }
 
 /* red accent bar under each card title */
@@ -156,13 +149,63 @@
     border-radius: 3px;
 }
 
+/* title on the left, tabs on the right */
+.card-header.with-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.list-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-2);
+}
+
+.list-tab {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.list-tab:hover:not(:disabled) {
+    background: var(--surface-3);
+}
+
+.list-tab.active,
+.list-tab.active:hover:not(:disabled) {
+    background: var(--red);
+    color: #fff;
+}
+
+.list-tab .count {
+    display: inline-block;
+    min-width: 1.6em;
+    margin-left: 4px;
+    padding: 1px 6px;
+    font-size: 0.75rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+}
+
 /* ---------- footer ---------- */
 .footer {
     padding: 30px 20px;
     text-align: center;
-    color: #888;
+    color: var(--text-dim);
     font-size: 0.85rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border);
+}
+
+.footer .credits {
+    margin-top: 6px;
+    font-size: 0.75rem;
 }
 
 /* ---------- responsive ---------- */
@@ -172,7 +215,16 @@
         padding: 14px 16px;
     }
 
+    .nav-left {
+        flex: 1;
+    }
+
+    .nav-right {
+        order: 2;
+    }
+
     .nav-center {
+        order: 3;
         width: 100%;
         justify-content: center;
     }
@@ -194,5 +246,13 @@
 
     .netflix-card {
         padding: 16px 12px;
+    }
+
+    .list-tabs {
+        width: 100%;
+    }
+
+    .list-tab {
+        flex: 1;
     }
 }

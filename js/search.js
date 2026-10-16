@@ -3,7 +3,7 @@
 // ==========================
 (function (MyFlix) {
     const { escapeHtml } = MyFlix.utils;
-    const { createMovieCard, setRowMessage } = MyFlix.cards;
+    const { createMovieCard, setRowMessage, saveAction } = MyFlix.cards;
     const favourites = MyFlix.favourites;
 
     const START_MESSAGE = "Search for a show above, or pick a genre below to browse.";
@@ -52,13 +52,7 @@
         }
 
         list.forEach(show => {
-            const saved = favourites.has(show.id);
-            els.results.appendChild(createMovieCard(show, {
-                label: saved ? "✓ In My List" : "Save Favourite",
-                className: "save-btn",
-                disabled: saved,
-                onClick: () => favourites.add(show)
-            }));
+            els.results.appendChild(createMovieCard(show, { actions: [saveAction(show)] }));
         });
     }
 

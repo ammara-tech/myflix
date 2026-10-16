@@ -1,18 +1,75 @@
 /* ==========================
-   BASE: variables, reset, buttons, utilities, animations
+   BASE: theme colours, reset, buttons, utilities, animations
 ========================== */
 
+/* ---------- dark theme (default) ---------- */
 :root {
+    color-scheme: dark;
+
     --red: #e50914;
     --red-hover: #ff1f2d;
     --red-glow: rgba(229, 9, 20, 0.4);
+
     --bg: #141414;
+    --bg-image: radial-gradient(circle at top, #1a1a1a 0%, #0b0b0f 60%, #000 100%);
     --surface: #1a1a1a;
     --surface-2: #222;
-    --border: rgba(255, 255, 255, 0.08);
+    --surface-3: #333;
+    --surface-4: #444;
+    --panel-a: rgba(25, 25, 25, 0.9);
+    --panel-b: rgba(10, 10, 10, 0.95);
+    --nav-bg: rgba(20, 20, 20, 0.85);
+
     --text: #fff;
+    --text-soft: #ddd;
     --text-muted: #bbb;
+    --text-dim: #888;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: #333;
+    --shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 18px 60px rgba(0, 0, 0, 0.85);
+
     --radius: 10px;
+}
+
+/* ---------- light theme ---------- */
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --bg: #f4f4f6;
+    --bg-image: radial-gradient(circle at top, #ffffff 0%, #f1f1f4 60%, #e9e9ee 100%);
+    --surface: #ffffff;
+    --surface-2: #ececf0;
+    --surface-3: #e2e2e7;
+    --surface-4: #d4d4da;
+    --panel-a: rgba(255, 255, 255, 0.95);
+    --panel-b: rgba(246, 246, 249, 0.98);
+    --nav-bg: rgba(255, 255, 255, 0.85);
+
+    --text: #141414;
+    --text-soft: #2a2a2a;
+    --text-muted: #555;
+    --text-dim: #6b6b6b;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: #d0d0d6;
+    --shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.14);
+}
+
+/* The TV screens (game + cinema player) always look like a dark screen. */
+.hero-tv,
+.cinema-tv {
+    color-scheme: dark;
+    --surface: #1a1a1a;
+    --surface-2: #222;
+    --surface-3: #333;
+    --surface-4: #444;
+    --text: #fff;
+    --text-soft: #ddd;
+    --text-muted: #bbb;
+    --text-dim: #888;
+    --border-strong: #333;
+    color: var(--text);
 }
 
 * {
@@ -26,10 +83,11 @@ html {
 }
 
 body {
+    min-height: 100vh;
     font-family: Arial, Helvetica, sans-serif;
     color: var(--text);
-    background: var(--bg) radial-gradient(circle at top, #1a1a1a 0%, #0b0b0f 60%, #000 100%) fixed;
-    min-height: 100vh;
+    background: var(--bg) var(--bg-image) fixed;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h2 {
@@ -40,6 +98,10 @@ a {
     color: var(--red);
 }
 
+.muted {
+    color: var(--text-dim);
+}
+
 /* ---------- buttons ---------- */
 button {
     font: inherit;
@@ -48,7 +110,7 @@ button {
     border-radius: 4px;
     cursor: pointer;
     background: var(--red);
-    color: var(--text);
+    color: #fff;
     transition: background 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
@@ -66,15 +128,33 @@ button:disabled {
 }
 
 .btn-secondary {
-    background: #333;
+    background: var(--surface-3);
+    color: var(--text);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #444;
+    background: var(--surface-4);
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    line-height: 1;
+    background: var(--surface-3);
+    color: var(--text);
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--surface-4);
 }
 
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+summary:focus-visible,
+a:focus-visible {
     outline: 2px solid var(--red);
     outline-offset: 2px;
 }
@@ -91,7 +171,7 @@ input {
     z-index: 2000;
     padding: 10px 14px;
     background: var(--red);
-    color: var(--text);
+    color: #fff;
     border-radius: 4px;
     text-decoration: none;
 }
@@ -105,6 +185,30 @@ input {
     display: none !important;
 }
 
+/* ---------- toast message ---------- */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 3000;
+    max-width: calc(100% - 32px);
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: #222;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-left: 3px solid var(--red);
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 /* ---------- scrollbars ---------- */
 ::-webkit-scrollbar {
     height: 8px;
@@ -112,12 +216,8 @@ input {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #444;
+    background: var(--surface-4);
     border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #666;
 }
 
 /* ---------- shared animations ---------- */
