@@ -1,5 +1,5 @@
 /* ==========================
-   CINEMA MODE (VIDEO PLAYER)
+   CINEMA MODE (TRAILERS / VIDEO PLAYER)
 ========================== */
 
 .story-cinema {
@@ -7,9 +7,16 @@
 }
 
 .cinema-subtitle {
-    margin: 10px 0 18px;
+    margin: 10px 0 4px;
     text-align: center;
-    color: #aaa;
+    color: var(--text-muted);
+}
+
+.cinema-mode {
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
 }
 
 /* ---------- film picker ---------- */
@@ -28,25 +35,24 @@
     padding: 20px;
     font-weight: bold;
     letter-spacing: 0.3px;
+    color: var(--text);
     border-radius: var(--radius);
-    border: 1px solid #333;
+    border: 1px solid var(--border-strong);
     background: var(--surface);
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.film-card:hover:not(:disabled),
-.film-card.active {
+.film-card:hover:not(:disabled) {
     background: var(--surface);
     border-color: var(--red);
     box-shadow: 0 0 20px var(--red-glow);
-}
-
-.film-card:hover {
     transform: scale(1.05);
 }
 
 .film-card.active,
 .film-card.active:hover:not(:disabled) {
+    border-color: var(--red);
+    box-shadow: 0 0 20px var(--red-glow);
     background: linear-gradient(135deg, rgba(229, 9, 20, 0.35), var(--surface));
 }
 
@@ -87,10 +93,12 @@
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
-#cinema-player {
+#cinema-player,
+#trailer-frame {
     display: block;
     width: 100%;
     height: 100%;
+    border: 0;
     background: #000;
 }
 
@@ -98,6 +106,22 @@
     margin-top: 10px;
     text-align: center;
     color: var(--text-muted);
+}
+
+.now-playing {
+    max-width: 700px;
+    margin: 10px auto 0;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    background: #141414;
+    border-left: 3px solid var(--red);
+}
+
+.now-playing p {
+    margin: 6px 0;
+    line-height: 1.5;
+    color: #ccc;
 }
 
 .cinema-controls {
@@ -120,9 +144,49 @@
     border-color: var(--red);
 }
 
-.cinema-controls button.active {
+.cinema-controls button.active,
+.cinema-controls button.active:hover:not(:disabled) {
     background: var(--red);
     border-color: var(--red);
+}
+
+/* ---------- TMDB key settings ---------- */
+.tmdb-settings {
+    max-width: 700px;
+    margin: 16px auto 0;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: 1px solid #222;
+    background: #0d0d0d;
+}
+
+.tmdb-settings summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.tmdb-settings p {
+    margin-top: 8px;
+    line-height: 1.5;
+    color: #aaa;
+}
+
+.tmdb-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tmdb-form input {
+    flex: 1 1 240px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    color: #fff;
 }
 
 @media (max-width: 480px) {

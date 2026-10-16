@@ -1,21 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="MYFLIX – search movies and shows, build your watch list, and play the movie guessing game.">
     <meta name="theme-color" content="#141414">
     <meta name="msapplication-navbutton-color" content="#141414">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MYFLIX">
     <title>MYFLIX – Movie Finder</title>
+
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
 
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/details.css">
     <link rel="stylesheet" href="css/game.css">
     <link rel="stylesheet" href="css/explore.css">
     <link rel="stylesheet" href="css/cinema.css">
+
+    <!-- Runs before the page paints so the saved theme applies immediately. -->
+    <script src="js/theme.js"></script>
 </head>
 
 <body class="app">
@@ -34,6 +43,11 @@
         <button type="submit" id="search-btn">Search</button>
         <button type="button" id="clear-btn" class="btn-secondary">Clear</button>
     </form>
+
+    <div class="nav-right">
+        <button type="button" id="install-btn" class="btn-secondary hidden">⬇ Install app</button>
+        <button type="button" id="theme-toggle" class="icon-btn" aria-label="Switch theme">☀️</button>
+    </div>
 </header>
 
 <main id="main-content">
@@ -61,14 +75,35 @@
 
 <!-- ================= MY LIST ================= -->
 <section class="netflix-card mylist-card" aria-labelledby="mylist-title">
-    <div class="card-header">
+    <div class="card-header with-tabs">
         <h2 id="mylist-title">My List</h2>
+        <div class="list-tabs" role="tablist" aria-label="My List">
+            <button type="button" class="list-tab active" role="tab" data-tab="want" aria-selected="true" aria-controls="favourites-list">
+                Want to Watch <span class="count">0</span>
+            </button>
+            <button type="button" class="list-tab" role="tab" data-tab="watched" aria-selected="false" aria-controls="favourites-list" tabindex="-1">
+                Watched <span class="count">0</span>
+            </button>
+        </div>
     </div>
 
     <div class="carousel">
         <button type="button" class="scroll-btn left" data-target="favourites-list" data-dir="-1" aria-label="Scroll My List left">‹</button>
-        <div id="favourites-list" class="row-scroll"></div>
+        <div id="favourites-list" class="row-scroll" role="tabpanel" aria-labelledby="mylist-title"></div>
         <button type="button" class="scroll-btn right" data-target="favourites-list" data-dir="1" aria-label="Scroll My List right">›</button>
+    </div>
+</section>
+
+<!-- ================= RECOMMENDATIONS ================= -->
+<section id="recommendations" class="netflix-card recs-card hidden" aria-labelledby="recs-title">
+    <div class="card-header">
+        <h2 id="recs-title">Because you saved…</h2>
+    </div>
+
+    <div class="carousel">
+        <button type="button" class="scroll-btn left" data-target="recs-list" data-dir="-1" aria-label="Scroll recommendations left">‹</button>
+        <div id="recs-list" class="row-scroll"></div>
+        <button type="button" class="scroll-btn right" data-target="recs-list" data-dir="1" aria-label="Scroll recommendations right">›</button>
     </div>
 </section>
 
@@ -83,8 +118,9 @@
 
         <div class="tv-content">
             <div class="mode-selector">
-                <button type="button" id="movie-mode" class="mode-btn active" aria-pressed="true">🎬 Movies</button>
-                <button type="button" id="series-mode" class="mode-btn" aria-pressed="false">📺 Series</button>
+                <button type="button" class="mode-btn active" data-mode="movies" aria-pressed="true">🎬 Movies</button>
+                <button type="button" class="mode-btn" data-mode="series" aria-pressed="false">📺 Series</button>
+                <button type="button" class="mode-btn" data-mode="live" aria-pressed="false" title="Endless questions from real TVMaze show summaries">🔴 Live TVMaze</button>
             </div>
 
             <div id="featured-screen">
@@ -93,6 +129,11 @@
             </div>
 
             <div id="game-screen" class="hidden">
+                <div id="game-timer" class="game-timer hidden" aria-hidden="true">
+                    <div class="timer-track"><div class="timer-fill"></div></div>
+                    <span class="timer-text">30s</span>
+                </div>
+
                 <h2 id="game-question">Guess the Movie 🎮</h2>
 
                 <input id="guess-input" type="text" placeholder="Type your answer..."
@@ -104,8 +145,9 @@
                 </div>
 
                 <p id="game-feedback" aria-live="polite"></p>
-                <p id="score">Score: 0 | Streak: 0</p>
             </div>
+
+            <p id="score">Score: 0 | Streak: 0</p>
         </div>
 
         <div class="tv-controls">
@@ -134,7 +176,8 @@
         <h2 id="cinema-title">Metaverse Theaters</h2>
     </div>
 
-    <p class="cinema-subtitle">Choose a film to unlock its cinematic trailer experience</p>
+    <p class="cinema-subtitle">Choose a genre to unlock its cinematic trailer experience</p>
+    <p class="cinema-mode"><span id="cinema-mode-label"></span></p>
 
     <div class="film-grid">
         <button type="button" class="film-card" data-film="action">Action &amp; Adventure</button>
@@ -162,26 +205,59 @@
 
         <div class="tv-screen-frame">
             <video id="cinema-player" controls muted playsinline preload="none"></video>
+            <iframe id="trailer-frame" class="hidden" title="Movie trailer"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
 
         <p id="cinema-status" aria-live="polite">Select a film to begin</p>
+        <div id="now-playing" class="now-playing hidden"></div>
 
         <div class="cinema-controls">
             <button type="button" id="cinema-play">▶ Play</button>
             <button type="button" id="cinema-next">⏭ Next</button>
             <button type="button" id="cinema-binge" aria-pressed="false">🍿 Auto-Binge</button>
         </div>
+
+        <details class="tmdb-settings">
+            <summary>🎞 Real trailers (TMDB key)</summary>
+            <p>
+                Paste a free TMDB API key to play real movie trailers for each genre.
+                Get one at <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org</a>
+                (sign up → Settings → API). It's saved only in this browser.
+            </p>
+            <form id="tmdb-form" class="tmdb-form">
+                <input id="tmdb-key" type="password" autocomplete="off" aria-label="TMDB API key" placeholder="Paste your TMDB API key">
+                <button type="submit">Save key</button>
+                <button type="button" id="tmdb-remove" class="btn-secondary hidden">Remove key</button>
+            </form>
+            <p id="tmdb-msg" class="muted" aria-live="polite"></p>
+        </details>
     </div>
 </section>
 
 </main>
 
+<!-- ================= SHOW DETAILS POPUP ================= -->
+<dialog id="details-dialog" class="details-dialog" aria-labelledby="details-title">
+    <div class="details-panel">
+        <button type="button" class="details-close icon-btn" aria-label="Close details">✕</button>
+        <div class="details-body"></div>
+    </div>
+</dialog>
+
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-    <p>&copy; 2026 Ammara Badat. All rights reserved. Show data from <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener">TVMaze</a>.</p>
+    <p>&copy; 2026 Ammara Badat. All rights reserved.</p>
+    <p class="credits">
+        Show data from <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener">TVMaze</a>.
+        Trailers use the <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a> API
+        but are not endorsed or certified by TMDB.
+    </p>
 </footer>
 
-<!-- Order matters: data and helpers first, main.js last. -->
+<!-- Order matters: settings, data and helpers first, main.js last. -->
+<script src="js/config.js" defer></script>
 <script src="js/data/genres.js" defer></script>
 <script src="js/data/questions.js" defer></script>
 <script src="js/data/films.js" defer></script>
@@ -189,9 +265,13 @@
 <script src="js/api.js" defer></script>
 <script src="js/cards.js" defer></script>
 <script src="js/favourites.js" defer></script>
+<script src="js/details.js" defer></script>
 <script src="js/search.js" defer></script>
+<script src="js/recommendations.js" defer></script>
 <script src="js/game.js" defer></script>
+<script src="js/trailers.js" defer></script>
 <script src="js/cinema.js" defer></script>
+<script src="js/pwa.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>

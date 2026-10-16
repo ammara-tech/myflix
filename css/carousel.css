@@ -1,6 +1,6 @@
 /* ==========================
    CAROUSEL ROWS + MOVIE CARDS
-   (Search Results and My List)
+   (Search Results, My List, Recommendations)
 ========================== */
 
 .carousel {
@@ -36,12 +36,12 @@
 }
 
 .row-message.error {
-    color: #ff8080;
+    color: #e5484d;
 }
 
 .row-message.loading {
     border-radius: var(--radius);
-    background: linear-gradient(90deg, #1a1a1a 25%, #262626 50%, #1a1a1a 75%);
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.2s linear infinite;
 }
@@ -55,6 +55,7 @@
     height: 64px;
     padding: 0;
     font-size: 24px;
+    color: #fff;
     background: rgba(0, 0, 0, 0.55);
     opacity: 0;
     transform: translateY(-50%);
@@ -101,10 +102,31 @@
     overflow: hidden;
     border-radius: var(--radius);
     background: var(--surface);
+    border: 1px solid var(--border);
     scroll-snap-align: start;
     transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
                 box-shadow 0.35s ease,
                 opacity 0.35s ease;
+}
+
+/* the poster is a button that opens the details popup */
+.poster-btn {
+    position: relative;
+    display: block;
+    padding: 0;
+    border-radius: 0;
+    background: #1f1f1f;
+    overflow: hidden;
+}
+
+.poster-btn:hover:not(:disabled),
+.poster-btn:active:not(:disabled) {
+    background: #1f1f1f;
+    transform: none;
+}
+
+.poster-btn:focus-visible {
+    outline-offset: -3px;
 }
 
 .movie-card img {
@@ -112,8 +134,48 @@
     width: 100%;
     height: 280px;
     object-fit: cover;
-    background: #1f1f1f;
     transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* "Details" hint that appears over the poster on hover */
+.poster-btn::after {
+    content: "ⓘ Details";
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 30px 10px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.poster-btn:hover::after,
+.poster-btn:focus-visible::after {
+    opacity: 1;
+}
+
+.card-rating,
+.card-badge {
+    position: absolute;
+    top: 8px;
+    padding: 3px 7px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 4px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.card-rating {
+    right: 8px;
+    color: #ffd700;
+}
+
+.card-badge {
+    left: 8px;
+    background: var(--red);
 }
 
 .movie-card h3 {
@@ -122,60 +184,93 @@
     line-height: 1.3;
 }
 
-.movie-card p {
-    padding: 0 12px 10px;
+.movie-card > p {
+    padding: 0 12px 8px;
     font-size: 0.8rem;
-    color: #999;
+    color: var(--text-dim);
 }
 
-.movie-card button {
-    position: relative;
-    z-index: 3;
+.card-actions {
+    display: flex;
+    gap: 6px;
     margin: auto 12px 12px;
+}
+
+.card-actions button {
+    flex: 1;
     padding: 8px 10px;
     font-size: 0.85rem;
     border-radius: 6px;
 }
 
-.movie-card .remove-btn {
-    background: #333;
+.card-actions .remove-btn {
+    flex: 0 0 36px;
+    padding: 8px 0;
+    background: var(--surface-3);
+    color: var(--text);
 }
 
-.movie-card .remove-btn:hover {
+.card-actions .remove-btn:hover:not(:disabled) {
     background: var(--red);
+    color: #fff;
 }
 
-/* dark gradient overlay on hover */
-.movie-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+.watched-btn {
+    background: #1f8a4c;
 }
 
-/* spotlight: dim the row, lift the hovered card */
-.row-scroll:hover .movie-card {
-    opacity: 0.5;
+.watched-btn:hover:not(:disabled) {
+    background: #26a65b;
 }
 
-.row-scroll .movie-card:hover,
-.row-scroll .movie-card:focus-within {
-    opacity: 1;
-    transform: scale(1.07);
-    z-index: 10;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(229, 9, 20, 0.35);
+/* ---------- star rating ---------- */
+.stars {
+    display: flex;
+    gap: 2px;
+    padding: 0 10px 8px;
 }
 
-.movie-card:hover::after {
-    opacity: 1;
+.star {
+    padding: 2px 3px;
+    font-size: 1.15rem;
+    line-height: 1;
+    background: transparent;
+    color: var(--surface-4);
 }
 
-.movie-card:hover img {
-    transform: scale(1.03);
-    filter: contrast(1.05) brightness(0.95);
+.star:hover:not(:disabled),
+.star.filled {
+    background: transparent;
+    color: #ffc107;
+}
+
+/* preview the rating you are about to give */
+.stars:hover .star {
+    color: #ffc107;
+}
+
+.stars .star:hover ~ .star {
+    color: var(--surface-4);
+}
+
+/* ---------- spotlight: dim the row, lift the hovered card ---------- */
+@media (hover: hover) {
+    .row-scroll:hover .movie-card {
+        opacity: 0.55;
+    }
+
+    .row-scroll .movie-card:hover,
+    .row-scroll .movie-card:focus-within {
+        opacity: 1;
+        transform: scale(1.07);
+        z-index: 10;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 25px rgba(229, 9, 20, 0.35);
+    }
+
+    .movie-card:hover img {
+        transform: scale(1.03);
+        filter: contrast(1.05) brightness(0.95);
+    }
 }
 
 /* ---------- responsive ---------- */
@@ -195,10 +290,19 @@
 
 @media (max-width: 480px) {
     .movie-card {
-        flex-basis: 130px;
+        flex-basis: 140px;
     }
 
     .movie-card img {
-        height: 190px;
+        height: 200px;
+    }
+
+    .card-actions {
+        margin: auto 8px 8px;
+    }
+
+    .card-actions button {
+        padding: 7px 6px;
+        font-size: 0.78rem;
     }
 }

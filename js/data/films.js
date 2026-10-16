@@ -2,27 +2,27 @@
 // CINEMA FILM LIBRARY
 // ==========================
 // Keys match the data-film attributes on the .film-card buttons.
-// Every genre currently points at the same open-licence sample video;
-// swap in a different URL per genre when you have one.
+// `tmdbGenres` are TMDB genre ids ("|" means OR) used to find real trailers.
+// `url` is the sample video played when no TMDB key is set.
 (function (MyFlix) {
     const SAMPLE =
         "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
 
     MyFlix.films = {
-        action: { title: "Action & Adventure", url: SAMPLE },
-        drama: { title: "Drama", url: SAMPLE },
-        comedy: { title: "Comedy", url: SAMPLE },
-        horror: { title: "Horror", url: SAMPLE },
-        scifi: { title: "Sci-Fi", url: SAMPLE },
-        romance: { title: "Romance", url: SAMPLE },
-        thriller: { title: "Thriller", url: SAMPLE },
-        mystery: { title: "Mystery", url: SAMPLE },
-        fantasy: { title: "Fantasy", url: SAMPLE },
-        animation: { title: "Animation", url: SAMPLE },
-        crime: { title: "Crime", url: SAMPLE },
-        documentary: { title: "Documentary", url: SAMPLE },
-        family: { title: "Family", url: SAMPLE },
-        war: { title: "War", url: SAMPLE },
-        western: { title: "Western", url: SAMPLE }
+        action: { title: "Action & Adventure", tmdbGenres: "28|12", url: SAMPLE },
+        drama: { title: "Drama", tmdbGenres: "18", url: SAMPLE },
+        comedy: { title: "Comedy", tmdbGenres: "35", url: SAMPLE },
+        horror: { title: "Horror", tmdbGenres: "27", url: SAMPLE },
+        scifi: { title: "Sci-Fi", tmdbGenres: "878", url: SAMPLE },
+        romance: { title: "Romance", tmdbGenres: "10749", url: SAMPLE },
+        thriller: { title: "Thriller", tmdbGenres: "53", url: SAMPLE },
+        mystery: { title: "Mystery", tmdbGenres: "9648", url: SAMPLE },
+        fantasy: { title: "Fantasy", tmdbGenres: "14", url: SAMPLE },
+        animation: { title: "Animation", tmdbGenres: "16", url: SAMPLE },
+        crime: { title: "Crime", tmdbGenres: "80", url: SAMPLE },
+        documentary: { title: "Documentary", tmdbGenres: "99", url: SAMPLE },
+        family: { title: "Family", tmdbGenres: "10751", url: SAMPLE },
+        war: { title: "War", tmdbGenres: "10752", url: SAMPLE },
+        western: { title: "Western", tmdbGenres: "37", url: SAMPLE }
     };
 })(window.MyFlix = window.MyFlix || {});

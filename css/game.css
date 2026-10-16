@@ -43,12 +43,13 @@
 }
 
 .tv-content {
-    padding: 30px 40px 40px;
+    padding: 30px 40px 32px;
     text-align: center;
 }
 
 .mode-selector {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     margin-bottom: 15px;
@@ -61,7 +62,12 @@
     transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.mode-btn.active {
+.mode-btn:hover:not(:disabled) {
+    background: var(--surface-3);
+}
+
+.mode-btn.active,
+.mode-btn.active:hover:not(:disabled) {
     background: var(--red);
     transform: scale(1.05);
 }
@@ -71,6 +77,12 @@
 #score {
     margin-top: 12px;
     color: #ccc;
+    line-height: 1.5;
+}
+
+#score {
+    font-size: 0.9rem;
+    color: #aaa;
 }
 
 #game-question {
@@ -85,7 +97,7 @@
     border: 1px solid #333;
     border-radius: 6px;
     background: #222;
-    color: var(--text);
+    color: #fff;
 }
 
 .game-actions {
@@ -93,6 +105,42 @@
     justify-content: center;
     gap: 10px;
     margin-top: 12px;
+}
+
+/* ---------- countdown ---------- */
+.game-timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto 14px;
+}
+
+.timer-track {
+    flex: 1;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #2a2a2a;
+}
+
+.timer-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: #1fbf6a;
+    transition: width 1s linear, background 0.3s ease;
+}
+
+.timer-fill.low {
+    background: var(--red);
+}
+
+.timer-text {
+    min-width: 3ch;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+    color: #ccc;
 }
 
 .tv-controls {
@@ -157,7 +205,7 @@
     }
 
     .tv-content {
-        padding: 24px 16px 30px;
+        padding: 24px 16px 26px;
     }
 
     #guess-input {

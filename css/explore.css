@@ -14,7 +14,7 @@
 .explore-group h3 {
     margin: 10px 0;
     font-size: 1.1rem;
-    color: #ddd;
+    color: var(--text-soft);
 }
 
 .category-grid {
@@ -29,8 +29,9 @@
     padding: 14px;
     font-size: 0.95rem;
     text-align: center;
+    color: var(--text);
     border-radius: var(--radius);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
     background: var(--surface);
     transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
@@ -41,6 +42,7 @@
 }
 
 .category-card.active {
+    color: #fff;
     background: var(--red);
     transform: translateY(-4px);
     box-shadow: 0 0 18px var(--red-glow);
@@ -64,8 +66,9 @@
     padding: 12px;
     font-size: 0.9rem;
     line-height: 1.5;
-    color: #ccc;
-    background: #181818;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-left: 3px solid var(--red);
     border-radius: 8px;
 }
@@ -74,7 +77,7 @@
     display: block;
     margin-top: 4px;
     font-size: 0.8rem;
-    color: #888;
+    color: var(--text-dim);
 }
 
 @media (max-width: 1024px) {
