@@ -1,19 +1,22 @@
 // ==========================
 // APP ENTRY POINT
 // ==========================
-// Scripts are loaded in order from index.html (data → helpers → features → main).
-// Plain <script defer> files are used instead of ES modules so the app
-// still works when index.html is opened straight from disk.
+// Scripts load in order from index.html (settings → data → helpers → APIs
+// → UI → pages → main). Plain <script defer> files, not ES modules, so the
+// app still works when index.html is opened straight from disk.
 document.addEventListener("DOMContentLoaded", () => {
     const M = window.MyFlix;
 
     M.theme.init();
-    M.cards.initScrollButtons();
-    M.favourites.init();
     M.details.init();
-    M.search.init();
-    M.recommendations.init();
-    M.game.init();
-    M.cinema.init();
+    M.player.init();
+    M.party.init();
+    M.mood.init();
+    M.settings.init();
+    M.router.init();
+    M.tracker.init();
     M.pwa.init();
+
+    // Keep every + / ✓ My List button in sync.
+    M.store.onChange(what => { if (what === "list") M.cards.refreshListButtons(); });
 });

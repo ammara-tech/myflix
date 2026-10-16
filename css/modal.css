@@ -1,0 +1,886 @@
+/* ==========================
+   MODALS: details ("More Info"), mood picker, settings
+========================== */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: clamp(0px, 3vw, 32px) 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.modal::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.modal-panel {
+    position: relative;
+    width: min(850px, calc(100% - 24px));
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.75);
+    animation: modal-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    background: #181818;
+    color: #fff;
+}
+
+.modal-close:hover {
+    background: #2a2a2a;
+}
+
+/* ---------- hero ---------- */
+.modal-hero {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    max-height: 480px;
+    width: 100%;
+    background: #000;
+}
+
+.modal-hero-media,
+.modal-hero-fade {
+    position: absolute;
+    inset: 0;
+}
+
+.modal-hero-media > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-hero--portrait .modal-hero-media .blur {
+    position: absolute;
+    inset: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
+    object-fit: cover;
+    filter: blur(30px) brightness(0.45);
+}
+
+.modal-hero--portrait .modal-hero-media .poster {
+    position: absolute;
+    right: 8%;
+    top: 10%;
+    height: 80%;
+    width: auto;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+.modal-hero .type-poster {
+    justify-content: center;
+    padding-left: 6%;
+}
+
+.modal-trailer {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.modal-hero-fade {
+    background: linear-gradient(0deg, var(--bg-elevated) 0%, transparent 55%);
+    pointer-events: none;
+}
+
+.modal-hero.is-playing .modal-hero-fade {
+    background: linear-gradient(0deg, var(--bg-elevated) 0%, transparent 22%);
+}
+
+.modal-hero.is-playing .modal-title {
+    display: none;
+}
+
+.modal-hero-content {
+    position: absolute;
+    left: 48px;
+    right: 48px;
+    bottom: 36px;
+    z-index: 2;
+}
+
+.modal-hero.is-playing .modal-hero-content {
+    bottom: 12px;
+}
+
+.modal-title {
+    max-width: 70%;
+    margin-bottom: 18px;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.stars--modal {
+    padding: 0 0 0 4px;
+}
+
+/* ---------- body ---------- */
+.modal-body {
+    padding: 8px 48px 40px;
+}
+
+.modal-body.is-loading::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 30px auto;
+    border-radius: 50%;
+    border: 3px solid var(--surface-3);
+    border-top-color: var(--red);
+    animation: spin 0.9s linear infinite;
+}
+
+.modal-body.is-loading .modal-section {
+    display: none;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 32px;
+}
+
+.modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 14px;
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.modal-overview {
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--text-2);
+}
+
+.modal-side {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-2);
+}
+
+.modal-side .label {
+    color: var(--text-dim);
+}
+
+.next-episode {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    background: rgba(70, 211, 105, 0.12);
+    border: 1px solid rgba(70, 211, 105, 0.35);
+}
+
+.next-episode .icon {
+    width: 28px;
+    height: 28px;
+    color: var(--green);
+}
+
+.next-episode div {
+    display: grid;
+    gap: 2px;
+}
+
+.next-episode span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.modal-section {
+    margin-top: 40px;
+}
+
+.modal-section > h3 {
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.hint-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.hint-line .icon {
+    color: var(--gold);
+}
+
+.attribution {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* ---------- ratings ---------- */
+.score-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.score-chip {
+    display: grid;
+    gap: 2px;
+    min-width: 120px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border-left: 4px solid var(--surface-3);
+}
+
+.score-chip strong {
+    font-size: 1.3rem;
+}
+
+.score-source {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.score-chip--good { border-left-color: var(--green); }
+.score-chip--ok { border-left-color: var(--gold); }
+.score-chip--bad { border-left-color: var(--red); }
+
+/* ---------- where to watch ---------- */
+.provider-group {
+    margin-bottom: 14px;
+}
+
+.provider-group .label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+}
+
+.provider-logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.provider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.provider img {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+}
+
+.provider-free {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, rgba(229, 9, 20, 0.2), transparent);
+    border-left: 4px solid var(--red);
+}
+
+.provider-free .icon {
+    width: 28px;
+    height: 28px;
+    color: var(--red);
+}
+
+.provider-free div {
+    display: grid;
+    gap: 2px;
+}
+
+.provider-free span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ---------- episodes ---------- */
+.episodes-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.season-select {
+    height: 42px;
+    padding: 0 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+}
+
+.episodes-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.episodes-head .btn {
+    margin-left: auto;
+}
+
+.mini-bar {
+    display: inline-block;
+    width: 100px;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--surface-3);
+}
+
+.mini-bar > span {
+    display: block;
+    height: 100%;
+    background: var(--red);
+    transition: width 0.3s ease;
+}
+
+.episode-list {
+    border-top: 1px solid var(--border);
+}
+
+.episode {
+    display: grid;
+    grid-template-columns: 34px 140px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 12px;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: background-color 0.15s ease;
+}
+
+.episode:hover {
+    background: var(--surface);
+}
+
+.ep-num {
+    font-size: 1.5rem;
+    color: var(--text-dim);
+    text-align: center;
+}
+
+.ep-still {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    color: var(--text-dim);
+}
+
+.ep-still img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ep-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.ep-top span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.ep-body p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.ep-check {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+}
+
+.ep-check:hover:not(:disabled) {
+    border-color: var(--text);
+    color: var(--text);
+}
+
+.ep-check.is-on {
+    border-color: var(--green);
+    background: var(--green);
+    color: #000;
+}
+
+.episode.is-watched .ep-still img {
+    opacity: 0.55;
+}
+
+.episode.is-watched .ep-num {
+    color: var(--green);
+}
+
+/* ---------- cast ---------- */
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 18px 14px;
+}
+
+.cast-grid li {
+    display: grid;
+    gap: 2px;
+    font-size: 0.8rem;
+}
+
+.cast-photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    margin-bottom: 6px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--text-dim);
+}
+
+.cast-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cast-photo .icon {
+    width: 40%;
+    height: 40%;
+}
+
+.cast-grid span {
+    color: var(--text-dim);
+}
+
+/* ---------- trivia ---------- */
+.trivia {
+    display: grid;
+    gap: 12px;
+}
+
+.trivia li {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    line-height: 1.5;
+    color: var(--text-2);
+}
+
+.trivia .icon {
+    color: var(--gold);
+    margin-top: 2px;
+}
+
+/* "More like this" grid inside the modal */
+.modal-section .card-grid {
+    padding: 0;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 700px) {
+    .modal {
+        padding: 0;
+    }
+
+    .modal-panel {
+        width: 100%;
+        min-height: 100%;
+        border-radius: 0;
+    }
+
+    .modal-hero-content {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .modal-title {
+        max-width: 100%;
+        font-size: 1.7rem;
+        margin-bottom: 12px;
+    }
+
+    .modal-body {
+        padding: 8px 16px 40px;
+    }
+
+    .modal-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .episode {
+        grid-template-columns: 110px minmax(0, 1fr) 40px;
+        gap: 12px;
+        padding: 14px 4px;
+    }
+
+    .ep-num {
+        display: none;
+    }
+
+    .episodes-head .btn {
+        margin-left: 0;
+    }
+
+    .modal-hero {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* ---------- small modals (mood, settings) ---------- */
+.modal--small .modal-panel {
+    width: min(620px, calc(100% - 24px));
+    margin-top: 6vh;
+}
+
+.modal-panel-body {
+    padding: 36px 40px 40px;
+}
+
+.modal-panel-body h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.6rem;
+    margin-bottom: 22px;
+}
+
+/* mood picker */
+.mood-title {
+    padding-right: 40px;
+}
+
+.mood-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.mood {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    padding: 14px 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    border: 2px solid transparent;
+    transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+
+.mood .icon {
+    width: 28px;
+    height: 28px;
+}
+
+.mood:hover {
+    transform: translateY(-2px);
+    background: var(--surface-2);
+}
+
+.mood.is-on {
+    border-color: var(--red);
+    background: rgba(229, 9, 20, 0.15);
+}
+
+.mood-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.wheel-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 20px;
+}
+
+.wheel {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(#e50914 0 36deg, #831010 36deg 72deg, #e50914 72deg 108deg, #831010 108deg 144deg, #e50914 144deg 180deg, #831010 180deg 216deg, #e50914 216deg 252deg, #831010 252deg 288deg, #e50914 288deg 324deg, #831010 324deg 360deg);
+    box-shadow: 0 0 0 6px #1a1a1a, 0 0 0 8px rgba(255, 255, 255, 0.15), 0 20px 50px rgba(229, 9, 20, 0.35);
+}
+
+.wheel-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: #fff;
+    transform: rotate(calc(360deg / var(--n) * var(--i) + 18deg)) translateY(-82px) translate(-50%, -50%);
+    transform-origin: 0 0;
+}
+
+.wheel-label .icon {
+    width: 20px;
+    height: 20px;
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    z-index: 3;
+    border: 12px solid transparent;
+    border-top: 20px solid #fff;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.wheel-spin {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #000;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    align-content: center;
+}
+
+.wheel-spin .icon {
+    width: 26px;
+    height: 26px;
+}
+
+.pick {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 20px;
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    animation: modal-in 0.4s ease;
+}
+
+.pick-media {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: var(--radius);
+}
+
+.pick-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pick-body {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+}
+
+.pick-body .label {
+    color: var(--red);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.7rem;
+}
+
+.pick-body h3 {
+    font-size: 1.5rem;
+}
+
+.pick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* settings */
+.settings .setting {
+    display: grid;
+    gap: 8px;
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+}
+
+.setting label {
+    font-weight: 700;
+}
+
+.setting-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dim);
+}
+
+.status--on {
+    color: var(--green);
+}
+
+.status .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.setting--row {
+    grid-template-columns: 1fr auto !important;
+    align-items: center;
+}
+
+.key-form {
+    display: flex;
+    gap: 8px;
+}
+
+.key-form input {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-msg {
+    font-size: 0.85rem;
+    color: #ff8a8a;
+}
+
+.form-msg:empty {
+    display: none;
+}
+
+.settings .setting:last-of-type + .small {
+    margin-top: 10px;
+}
+
+@media (max-width: 560px) {
+    .modal-panel-body {
+        padding: 28px 18px;
+    }
+
+    .mood-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mood {
+        grid-template-columns: auto 1fr;
+        justify-items: start;
+        align-items: center;
+        text-align: left;
+        padding: 12px;
+    }
+
+    .pick {
+        grid-template-columns: 100px minmax(0, 1fr);
+    }
+
+    .key-form {
+        flex-wrap: wrap;
+    }
+}

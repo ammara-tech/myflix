@@ -2,275 +2,169 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MYFLIX – search movies and shows, build your watch list, and play the movie guessing game.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="MYFLIX – browse TV shows and movies, stream free classic films, track episodes and play movie games.">
     <meta name="theme-color" content="#141414">
-    <meta name="msapplication-navbutton-color" content="#141414">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MYFLIX">
-    <title>MYFLIX – Movie Finder</title>
+    <title>MYFLIX</title>
 
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <link rel="manifest" href="manifest.webmanifest">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap">
+
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/carousel.css">
-    <link rel="stylesheet" href="css/details.css">
-    <link rel="stylesheet" href="css/game.css">
-    <link rel="stylesheet" href="css/explore.css">
-    <link rel="stylesheet" href="css/cinema.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/billboard.css">
+    <link rel="stylesheet" href="css/rows.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/player.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/games.css">
 
     <!-- Runs before the page paints so the saved theme applies immediately. -->
     <script src="js/theme.js"></script>
 </head>
 
-<body class="app">
-
-<a href="#main-content" class="skip-link">Skip to content</a>
+<body>
+<a href="#view" class="skip-link">Skip to content</a>
 
 <!-- ================= TOP NAV ================= -->
 <header class="nav">
-    <div class="nav-left">
-        <h1 class="logo">MYFLIX</h1>
-    </div>
+    <a href="#/" class="logo" aria-label="MYFLIX home">MYFLIX</a>
 
-    <form class="nav-center" id="search-form" role="search" aria-label="Movie search">
-        <input id="search-input" type="search" placeholder="Search movies, shows..."
-               aria-label="Search movies and shows" autocomplete="off">
-        <button type="submit" id="search-btn">Search</button>
-        <button type="button" id="clear-btn" class="btn-secondary">Clear</button>
-    </form>
+    <nav class="nav-links" aria-label="Main">
+        <a href="#/" data-route="home">Home</a>
+        <a href="#/tv" data-route="tv">TV Shows</a>
+        <a href="#/movies" data-route="movies">Movies</a>
+        <a href="#/classics" data-route="classics">Free Classics</a>
+        <a href="#/my-list" data-route="my-list">My List</a>
+        <a href="#/games" data-route="games">Games</a>
+    </nav>
 
-    <div class="nav-right">
-        <button type="button" id="install-btn" class="btn-secondary hidden">⬇ Install app</button>
-        <button type="button" id="theme-toggle" class="icon-btn" aria-label="Switch theme">☀️</button>
+    <div class="nav-tools">
+        <form class="search-box" role="search">
+            <button type="button" class="search-toggle nav-icon" aria-label="Search"><svg class="icon"><use href="#i-search"></use></svg></button>
+            <input type="search" placeholder="Titles, people, genres" aria-label="Search titles" autocomplete="off">
+        </form>
+
+        <button type="button" class="nav-icon" data-act="mood" aria-label="Surprise me" title="Surprise me">
+            <svg class="icon"><use href="#i-dices"></use></svg>
+        </button>
+
+        <div class="menu-wrap">
+            <button type="button" id="bell-btn" class="nav-icon" data-menu="bell-menu" aria-haspopup="true" aria-expanded="false" aria-label="New episodes">
+                <svg class="icon"><use href="#i-bell"></use></svg><span class="badge hidden">0</span>
+            </button>
+            <div id="bell-menu" class="menu menu--bell"></div>
+        </div>
+
+        <div class="menu-wrap">
+            <button type="button" class="profile-btn" data-menu="profile-menu" aria-haspopup="true" aria-expanded="false" aria-label="Profile menu">
+                <span class="avatar avatar--profile"><span class="avatar-initial"></span></span>
+                <svg class="icon caret"><use href="#i-chevron-down"></use></svg>
+            </button>
+            <div id="profile-menu" class="menu menu--profile">
+                <a href="#/stats"><svg class="icon"><use href="#i-chart-column"></use></svg><span>Your Stats</span></a>
+                <a href="#/my-list?tab=following"><svg class="icon"><use href="#i-list-checks"></use></svg><span>Episode Tracker</span></a>
+                <button type="button" data-act="party"><svg class="icon"><use href="#i-users"></use></svg><span>Join a Watch Party</span></button>
+                <button type="button" data-act="theme" data-theme-label></button>
+                <button type="button" data-act="install" class="hidden"><svg class="icon"><use href="#i-download"></use></svg><span>Install app</span></button>
+                <hr>
+                <button type="button" data-act="settings"><svg class="icon"><use href="#i-settings"></use></svg><span>Settings &amp; API keys</span></button>
+            </div>
+        </div>
     </div>
 </header>
 
-<main id="main-content">
+<!-- ================= PAGE CONTENT (filled by the router) ================= -->
+<main id="view" class="view" tabindex="-1"></main>
 
-<!-- ================= HERO ================= -->
-<section class="hero" aria-label="Welcome">
-    <div class="hero-card">
-        <h2>Unlimited movies, shows, and more</h2>
-        <p>Search and build your personal watch list</p>
-    </div>
-</section>
-
-<!-- ================= SEARCH RESULTS ================= -->
-<section class="netflix-card results-card" aria-labelledby="results-title">
-    <div class="card-header">
-        <h2 id="results-title">Search Results</h2>
-    </div>
-
-    <div class="carousel">
-        <button type="button" class="scroll-btn left" data-target="movie-results" data-dir="-1" aria-label="Scroll results left">‹</button>
-        <div id="movie-results" class="row-scroll" aria-live="polite"></div>
-        <button type="button" class="scroll-btn right" data-target="movie-results" data-dir="1" aria-label="Scroll results right">›</button>
-    </div>
-</section>
-
-<!-- ================= MY LIST ================= -->
-<section class="netflix-card mylist-card" aria-labelledby="mylist-title">
-    <div class="card-header with-tabs">
-        <h2 id="mylist-title">My List</h2>
-        <div class="list-tabs" role="tablist" aria-label="My List">
-            <button type="button" class="list-tab active" role="tab" data-tab="want" aria-selected="true" aria-controls="favourites-list">
-                Want to Watch <span class="count">0</span>
-            </button>
-            <button type="button" class="list-tab" role="tab" data-tab="watched" aria-selected="false" aria-controls="favourites-list" tabindex="-1">
-                Watched <span class="count">0</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="carousel">
-        <button type="button" class="scroll-btn left" data-target="favourites-list" data-dir="-1" aria-label="Scroll My List left">‹</button>
-        <div id="favourites-list" class="row-scroll" role="tabpanel" aria-labelledby="mylist-title"></div>
-        <button type="button" class="scroll-btn right" data-target="favourites-list" data-dir="1" aria-label="Scroll My List right">›</button>
-    </div>
-</section>
-
-<!-- ================= RECOMMENDATIONS ================= -->
-<section id="recommendations" class="netflix-card recs-card hidden" aria-labelledby="recs-title">
-    <div class="card-header">
-        <h2 id="recs-title">Because you saved…</h2>
-    </div>
-
-    <div class="carousel">
-        <button type="button" class="scroll-btn left" data-target="recs-list" data-dir="-1" aria-label="Scroll recommendations left">‹</button>
-        <div id="recs-list" class="row-scroll"></div>
-        <button type="button" class="scroll-btn right" data-target="recs-list" data-dir="1" aria-label="Scroll recommendations right">›</button>
-    </div>
-</section>
-
-<!-- ================= GUESSING GAME (TV) ================= -->
-<section class="hero-tv" aria-label="Movie guessing game">
-    <div class="tv-screen">
-
-        <div class="tv-topbar">
-            <div class="tv-logo">MYFLIX</div>
-            <div class="tv-status on">● LIVE</div>
-        </div>
-
-        <div class="tv-content">
-            <div class="mode-selector">
-                <button type="button" class="mode-btn active" data-mode="movies" aria-pressed="true">🎬 Movies</button>
-                <button type="button" class="mode-btn" data-mode="series" aria-pressed="false">📺 Series</button>
-                <button type="button" class="mode-btn" data-mode="live" aria-pressed="false" title="Endless questions from real TVMaze show summaries">🔴 Live TVMaze</button>
-            </div>
-
-            <div id="featured-screen">
-                <h2>🎬 Unlimited movies, shows, and more</h2>
-                <p id="featured-text">Press Start to play the Movie Guessing Game</p>
-            </div>
-
-            <div id="game-screen" class="hidden">
-                <div id="game-timer" class="game-timer hidden" aria-hidden="true">
-                    <div class="timer-track"><div class="timer-fill"></div></div>
-                    <span class="timer-text">30s</span>
-                </div>
-
-                <h2 id="game-question">Guess the Movie 🎮</h2>
-
-                <input id="guess-input" type="text" placeholder="Type your answer..."
-                       aria-label="Your guess" autocomplete="off">
-
-                <div class="game-actions">
-                    <button type="button" id="submit-guess">Submit</button>
-                    <button type="button" id="next-question" class="btn-secondary">Next</button>
-                </div>
-
-                <p id="game-feedback" aria-live="polite"></p>
-            </div>
-
-            <p id="score">Score: 0 | Streak: 0</p>
-        </div>
-
-        <div class="tv-controls">
-            <button type="button" id="start-game">▶ Start Game</button>
-            <button type="button" id="stop-game">⏹ Stop</button>
-            <button type="button" id="hint-btn" class="hint-btn">💡 Hint</button>
-        </div>
-
-    </div>
-</section>
-
-<!-- ================= EXPLORE ================= -->
-<section class="explore" aria-labelledby="explore-title">
-    <h2 id="explore-title" class="section-title">Explore Categories</h2>
-
-    <div class="explore-group">
-        <h3>Genres</h3>
-        <div id="genreRow" class="category-grid"></div>
-        <div id="genreInfo" class="inline-info" aria-live="polite"></div>
-    </div>
-</section>
-
-<!-- ================= CINEMA MODE ================= -->
-<section class="netflix-card story-cinema" aria-labelledby="cinema-title">
-    <div class="card-header">
-        <h2 id="cinema-title">Metaverse Theaters</h2>
-    </div>
-
-    <p class="cinema-subtitle">Choose a genre to unlock its cinematic trailer experience</p>
-    <p class="cinema-mode"><span id="cinema-mode-label"></span></p>
-
-    <div class="film-grid">
-        <button type="button" class="film-card" data-film="action">Action &amp; Adventure</button>
-        <button type="button" class="film-card" data-film="drama">Drama</button>
-        <button type="button" class="film-card" data-film="comedy">Comedy</button>
-        <button type="button" class="film-card" data-film="horror">Horror</button>
-        <button type="button" class="film-card" data-film="scifi">Sci-Fi</button>
-        <button type="button" class="film-card" data-film="romance">Romance</button>
-        <button type="button" class="film-card" data-film="thriller">Thriller</button>
-        <button type="button" class="film-card" data-film="mystery">Mystery</button>
-        <button type="button" class="film-card" data-film="fantasy">Fantasy</button>
-        <button type="button" class="film-card" data-film="animation">Animation</button>
-        <button type="button" class="film-card" data-film="crime">Crime</button>
-        <button type="button" class="film-card" data-film="documentary">Documentary</button>
-        <button type="button" class="film-card" data-film="family">Family</button>
-        <button type="button" class="film-card" data-film="war">War</button>
-        <button type="button" class="film-card" data-film="western">Western</button>
-    </div>
-
-    <div class="cinema-tv">
-        <div class="tv-topbar">
-            <div class="tv-logo">MYFLIX Cinema</div>
-            <div id="cinema-badge" class="tv-status">● PLAYING</div>
-        </div>
-
-        <div class="tv-screen-frame">
-            <video id="cinema-player" controls muted playsinline preload="none"></video>
-            <iframe id="trailer-frame" class="hidden" title="Movie trailer"
-                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                    allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-        </div>
-
-        <p id="cinema-status" aria-live="polite">Select a film to begin</p>
-        <div id="now-playing" class="now-playing hidden"></div>
-
-        <div class="cinema-controls">
-            <button type="button" id="cinema-play">▶ Play</button>
-            <button type="button" id="cinema-next">⏭ Next</button>
-            <button type="button" id="cinema-binge" aria-pressed="false">🍿 Auto-Binge</button>
-        </div>
-
-        <details class="tmdb-settings">
-            <summary>🎞 Real trailers (TMDB key)</summary>
-            <p>
-                Paste a free TMDB API key to play real movie trailers for each genre.
-                Get one at <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org</a>
-                (sign up → Settings → API). It's saved only in this browser.
-            </p>
-            <form id="tmdb-form" class="tmdb-form">
-                <input id="tmdb-key" type="password" autocomplete="off" aria-label="TMDB API key" placeholder="Paste your TMDB API key">
-                <button type="submit">Save key</button>
-                <button type="button" id="tmdb-remove" class="btn-secondary hidden">Remove key</button>
-            </form>
-            <p id="tmdb-msg" class="muted" aria-live="polite"></p>
-        </details>
-    </div>
-</section>
-
-</main>
-
-<!-- ================= SHOW DETAILS POPUP ================= -->
-<dialog id="details-dialog" class="details-dialog" aria-labelledby="details-title">
-    <div class="details-panel">
-        <button type="button" class="details-close icon-btn" aria-label="Close details">✕</button>
-        <div class="details-body"></div>
-    </div>
-</dialog>
+<!-- ================= MOBILE BOTTOM NAV ================= -->
+<nav class="tabbar" aria-label="Main">
+    <a href="#/" data-route="home"><svg class="icon"><use href="#i-house"></use></svg><span>Home</span></a>
+    <a href="#/tv" data-route="tv"><svg class="icon"><use href="#i-tv"></use></svg><span>TV</span></a>
+    <a href="#/movies" data-route="movies"><svg class="icon"><use href="#i-clapperboard"></use></svg><span>Movies</span></a>
+    <a href="#/classics" data-route="classics"><svg class="icon"><use href="#i-film"></use></svg><span>Classics</span></a>
+    <a href="#/my-list" data-route="my-list"><svg class="icon"><use href="#i-list"></use></svg><span>My List</span></a>
+    <a href="#/games" data-route="games"><svg class="icon"><use href="#i-gamepad-2"></use></svg><span>Games</span></a>
+</nav>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-    <p>&copy; 2026 Ammara Badat. All rights reserved.</p>
+    <div class="footer-links">
+        <a href="#/stats">Your Stats</a>
+        <a href="#/classics">Free Classics</a>
+        <a href="#/games">Games</a>
+        <button type="button" class="link" onclick="MyFlix.settings.open()">Settings</button>
+    </div>
     <p class="credits">
-        Show data from <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener">TVMaze</a>.
-        Trailers use the <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a> API
-        but are not endorsed or certified by TMDB.
+        TV data from <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener">TVMaze</a> ·
+        Movies from <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a> (this product uses the TMDB API but is not endorsed or certified by TMDB) ·
+        Streaming availability by JustWatch ·
+        Scores from <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb</a> ·
+        Facts from <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a> ·
+        Free films from the <a href="https://archive.org/details/feature_films" target="_blank" rel="noopener">Internet Archive</a> ·
+        Icons by <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>
     </p>
+    <p>&copy; 2026 Ammara Badat. All rights reserved.</p>
 </footer>
 
-<!-- Order matters: settings, data and helpers first, main.js last. -->
+<!-- ================= DIALOGS ================= -->
+<dialog id="details-modal" class="modal modal--details" aria-labelledby="modal-title">
+    <div class="modal-panel"></div>
+</dialog>
+
+<dialog id="mood-modal" class="modal modal--small" aria-label="Mood picker">
+    <div class="modal-panel">
+        <button type="button" class="modal-close circle" data-act="close" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button>
+        <div class="modal-panel-body"></div>
+    </div>
+</dialog>
+
+<dialog id="settings-modal" class="modal modal--small" aria-label="Settings">
+    <div class="modal-panel">
+        <button type="button" class="modal-close circle" data-act="close" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button>
+        <div class="modal-panel-body settings"></div>
+    </div>
+</dialog>
+
+<!-- Full-screen player (built by js/ui/player.js) -->
+<div id="player" class="player hidden" role="dialog" aria-label="Video player"></div>
+
+<!-- Order matters: settings & data → helpers → APIs → UI → pages → main -->
 <script src="js/config.js" defer></script>
+<script src="js/icons.js" defer></script>
 <script src="js/data/genres.js" defer></script>
+<script src="js/data/classics.js" defer></script>
 <script src="js/data/questions.js" defer></script>
-<script src="js/data/films.js" defer></script>
 <script src="js/utils.js" defer></script>
-<script src="js/api.js" defer></script>
-<script src="js/cards.js" defer></script>
-<script src="js/favourites.js" defer></script>
-<script src="js/details.js" defer></script>
-<script src="js/search.js" defer></script>
-<script src="js/recommendations.js" defer></script>
-<script src="js/game.js" defer></script>
-<script src="js/trailers.js" defer></script>
-<script src="js/cinema.js" defer></script>
+<script src="js/store.js" defer></script>
+<script src="js/models.js" defer></script>
+<script src="js/api/tvmaze.js" defer></script>
+<script src="js/api/tmdb.js" defer></script>
+<script src="js/api/omdb.js" defer></script>
+<script src="js/api/wiki.js" defer></script>
+<script src="js/api/archive.js" defer></script>
+<script src="js/ui/cards.js" defer></script>
+<script src="js/ui/billboard.js" defer></script>
+<script src="js/ui/details.js" defer></script>
+<script src="js/ui/player.js" defer></script>
+<script src="js/party.js" defer></script>
+<script src="js/ui/mood.js" defer></script>
+<script src="js/ui/settings.js" defer></script>
+<script src="js/recommend.js" defer></script>
+<script src="js/tracker.js" defer></script>
+<script src="js/router.js" defer></script>
+<script src="js/pages/helpers.js" defer></script>
+<script src="js/pages/browse.js" defer></script>
+<script src="js/pages/library.js" defer></script>
+<script src="js/pages/games.js" defer></script>
 <script src="js/pwa.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
