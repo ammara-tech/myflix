@@ -3,260 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MYFLIX – search movies and shows, build your watch list, and play the movie guessing game.">
     <meta name="theme-color" content="#141414">
     <meta name="msapplication-navbutton-color" content="#141414">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Movie Finder</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MYFLIX – Movie Finder</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/explore.css">
+    <link rel="stylesheet" href="css/cinema.css">
 </head>
 
 <body class="app">
 
-<!-- ================= SKIP LINK (ACCESSIBILITY) ================= -->
-<a href="#main-content" style="position:absolute;left:-999px;top:auto;">
-    Skip to content
-</a>
+<a href="#main-content" class="skip-link">Skip to content</a>
 
 <!-- ================= TOP NAV ================= -->
-<header class="nav" role="banner">
-
+<header class="nav">
     <div class="nav-left">
         <h1 class="logo">MYFLIX</h1>
     </div>
 
-    <!-- FORM ENABLES ENTER KEY SEARCH -->
-    <form class="nav-center" id="search-form" aria-label="Movie search form">
-
-        <input
-            id="search-input"
-            type="text"
-            placeholder="Search movies, shows..."
-            aria-label="Search movies and shows"
-        >
-
+    <form class="nav-center" id="search-form" role="search" aria-label="Movie search">
+        <input id="search-input" type="search" placeholder="Search movies, shows..."
+               aria-label="Search movies and shows" autocomplete="off">
         <button type="submit" id="search-btn">Search</button>
-        <button type="button" id="clear-btn">Clear</button>
-
+        <button type="button" id="clear-btn" class="btn-secondary">Clear</button>
     </form>
-
 </header>
 
-<main id="main-content" role="main">
+<main id="main-content">
 
 <!-- ================= HERO ================= -->
-<section class="hero" aria-label="Hero section">
+<section class="hero" aria-label="Welcome">
     <div class="hero-card">
-        <div class="hero-content">
-            <h2>Unlimited movies, shows, and more</h2>
-            <p>Search and build your personal watch list</p>
-        </div>
+        <h2>Unlimited movies, shows, and more</h2>
+        <p>Search and build your personal watch list</p>
     </div>
 </section>
 
 <!-- ================= SEARCH RESULTS ================= -->
-<section class="netflix-card" aria-label="Search results">
-
+<section class="netflix-card results-card" aria-labelledby="results-title">
     <div class="card-header">
-        <h2>Search Results</h2>
+        <h2 id="results-title">Search Results</h2>
     </div>
 
-    <button class="scroll-btn left" onclick="scrollRow('movie-results', -1)">‹</button>
-    <button class="scroll-btn right" onclick="scrollRow('movie-results', 1)">›</button>
-
-    <div id="movie-results" class="row-scroll"></div>
-
-    <div class="loading hidden"></div>
+    <div class="carousel">
+        <button type="button" class="scroll-btn left" data-target="movie-results" data-dir="-1" aria-label="Scroll results left">‹</button>
+        <div id="movie-results" class="row-scroll" aria-live="polite"></div>
+        <button type="button" class="scroll-btn right" data-target="movie-results" data-dir="1" aria-label="Scroll results right">›</button>
+    </div>
 </section>
-<br>
 
 <!-- ================= MY LIST ================= -->
-<section class="netflix-card" aria-label="My favourites list">
-
+<section class="netflix-card mylist-card" aria-labelledby="mylist-title">
     <div class="card-header">
-        <h2>My List</h2>
+        <h2 id="mylist-title">My List</h2>
     </div>
 
-    <button class="scroll-btn left" onclick="scrollRow('favourites-list', -1)">‹</button>
-    <button class="scroll-btn right" onclick="scrollRow('favourites-list', 1)">›</button>
-
-    <div class="carousel-wrapper">
-        <div id="favourites-list" class="row-scroll">
-            <div class="loading hidden"></div>
-        </div>
+    <div class="carousel">
+        <button type="button" class="scroll-btn left" data-target="favourites-list" data-dir="-1" aria-label="Scroll My List left">‹</button>
+        <div id="favourites-list" class="row-scroll"></div>
+        <button type="button" class="scroll-btn right" data-target="favourites-list" data-dir="1" aria-label="Scroll My List right">›</button>
     </div>
 </section>
 
-<!-- ================= HERO TV ================= -->
-<section class="hero-tv" aria-label="Movie game section">
-
+<!-- ================= GUESSING GAME (TV) ================= -->
+<section class="hero-tv" aria-label="Movie guessing game">
     <div class="tv-screen">
 
         <div class="tv-topbar">
             <div class="tv-logo">MYFLIX</div>
-            <div class="tv-status">● LIVE</div>
+            <div class="tv-status on">● LIVE</div>
         </div>
 
         <div class="tv-content">
-
             <div class="mode-selector">
-                <button type="button" id="movie-mode" class="mode-btn active">🎬 Movies</button>
-                <button type="button" id="series-mode" class="mode-btn">📺 Series</button>
+                <button type="button" id="movie-mode" class="mode-btn active" aria-pressed="true">🎬 Movies</button>
+                <button type="button" id="series-mode" class="mode-btn" aria-pressed="false">📺 Series</button>
             </div>
 
-            <div id="tv-mode">
+            <div id="featured-screen">
+                <h2>🎬 Unlimited movies, shows, and more</h2>
+                <p id="featured-text">Press Start to play the Movie Guessing Game</p>
+            </div>
 
-                <div id="featured-screen">
-                    <h2>🎬 Unlimited movies, shows, and more</h2>
-                    <p>Press Start to play the Movie Guessing Game</p>
-                </div>
+            <div id="game-screen" class="hidden">
+                <h2 id="game-question">Guess the Movie 🎮</h2>
 
-                <div id="game-screen" class="hidden">
-                    <h2 id="game-question">Guess the Movie 🎮</h2>
+                <input id="guess-input" type="text" placeholder="Type your answer..."
+                       aria-label="Your guess" autocomplete="off">
 
-                    <input id="guess-input" placeholder="Type your answer..." aria-label="Guess input" />
-
+                <div class="game-actions">
                     <button type="button" id="submit-guess">Submit</button>
-                    <button type="button" id="next-question">Next</button>
-
-                    <p id="game-feedback"></p>
-                    <p id="score">Score: 0</p>
+                    <button type="button" id="next-question" class="btn-secondary">Next</button>
                 </div>
 
+                <p id="game-feedback" aria-live="polite"></p>
+                <p id="score">Score: 0 | Streak: 0</p>
             </div>
-
         </div>
 
         <div class="tv-controls">
             <button type="button" id="start-game">▶ Start Game</button>
             <button type="button" id="stop-game">⏹ Stop</button>
+            <button type="button" id="hint-btn" class="hint-btn">💡 Hint</button>
         </div>
 
     </div>
-
 </section>
 
 <!-- ================= EXPLORE ================= -->
-<section class="explore">
+<section class="explore" aria-labelledby="explore-title">
+    <h2 id="explore-title" class="section-title">Explore Categories</h2>
 
-    <h2 class="section-title" style="text-align:center;">Explore Categories</h2>
-
-    <!-- GENRES -->
     <div class="explore-group">
         <h3>Genres</h3>
         <div id="genreRow" class="category-grid"></div>
-        <div id="genreInfo" class="inline-info">Description</div>
+        <div id="genreInfo" class="inline-info" aria-live="polite"></div>
     </div>
-
-
 </section>
-<!-- ================= STORY CINEMA MODE ================= -->
-<section class="netflix-card story-cinema" aria-label="Cinematic Story Mode">
 
+<!-- ================= CINEMA MODE ================= -->
+<section class="netflix-card story-cinema" aria-labelledby="cinema-title">
     <div class="card-header">
-        <h2> Metaverse Theaters</h2>
+        <h2 id="cinema-title">Metaverse Theaters</h2>
     </div>
 
-    <p class="cinema-subtitle">
-        Choose a film to unlock its cinematic trailer experience
-    </p>
+    <p class="cinema-subtitle">Choose a film to unlock its cinematic trailer experience</p>
 
-    <!-- FILM SELECTION GRID -->
     <div class="film-grid">
+        <button type="button" class="film-card" data-film="action">Action &amp; Adventure</button>
+        <button type="button" class="film-card" data-film="drama">Drama</button>
+        <button type="button" class="film-card" data-film="comedy">Comedy</button>
+        <button type="button" class="film-card" data-film="horror">Horror</button>
+        <button type="button" class="film-card" data-film="scifi">Sci-Fi</button>
+        <button type="button" class="film-card" data-film="romance">Romance</button>
+        <button type="button" class="film-card" data-film="thriller">Thriller</button>
+        <button type="button" class="film-card" data-film="mystery">Mystery</button>
+        <button type="button" class="film-card" data-film="fantasy">Fantasy</button>
+        <button type="button" class="film-card" data-film="animation">Animation</button>
+        <button type="button" class="film-card" data-film="crime">Crime</button>
+        <button type="button" class="film-card" data-film="documentary">Documentary</button>
+        <button type="button" class="film-card" data-film="family">Family</button>
+        <button type="button" class="film-card" data-film="war">War</button>
+        <button type="button" class="film-card" data-film="western">Western</button>
+    </div>
 
-    <button class="film-card" data-film="action">
-        <div>Action & Adventure</div>
-    </button>
-
-    <button class="film-card" data-film="drama">
-        <div>Drama</div>
-    </button>
-
-    <button class="film-card" data-film="comedy">
-        <div>Comedy</div>
-    </button>
-
-    <button class="film-card" data-film="horror">
-        <div>Horror</div>
-    </button>
-
-    <button class="film-card" data-film="scifi">
-        <div>Sci-Fi</div>
-    </button>
-
-    <button class="film-card" data-film="romance">
-        <div>Romance</div>
-    </button>
-
-    <button class="film-card" data-film="thriller">
-        <div>Thriller</div>
-    </button>
-
-    <button class="film-card" data-film="mystery">
-        <div>Mystery</div>
-    </button>
-
-    <button class="film-card" data-film="fantasy">
-        <div>Fantasy</div>
-    </button>
-
-    <button class="film-card" data-film="animation">
-        <div>Animation</div>
-    </button>
-
-    <button class="film-card" data-film="crime">
-        <div>Crime</div>
-    </button>
-
-    <button class="film-card" data-film="documentary">
-        <div>Documentary</div>
-    </button>
-
-    <button class="film-card" data-film="family">
-        <div>Family</div>
-    </button>
-
-    <button class="film-card" data-film="war">
-        <div>War</div>
-    </button>
-
-    <button class="film-card" data-film="western">
-        <div>Western</div>
-    </button>
-
-</div>
-
-    <!-- TV STYLE PLAYER -->
     <div class="cinema-tv">
-
         <div class="tv-topbar">
             <div class="tv-logo">MYFLIX Cinema</div>
-            <div class="tv-status">● PLAYING</div>
+            <div id="cinema-badge" class="tv-status">● PLAYING</div>
         </div>
 
         <div class="tv-screen-frame">
-        <video id="cinema-player" controls muted playsinline style="width:100%;height:100%;background:black;"></video>
+            <video id="cinema-player" controls muted playsinline preload="none"></video>
         </div>
 
-        <p id="cinema-status">Select a film to begin</p>
-<!-- ================= CINEMA CONTROL BAR ================= -->
-<div class="cinema-controls">
+        <p id="cinema-status" aria-live="polite">Select a film to begin</p>
 
-    <button id="cinema-play">▶ Play</button>
-    <button id="cinema-next">⏭ Next</button>
-    <button id="cinema-binge">🍿 Auto-Binge</button>
-
-</div>
+        <div class="cinema-controls">
+            <button type="button" id="cinema-play">▶ Play</button>
+            <button type="button" id="cinema-next">⏭ Next</button>
+            <button type="button" id="cinema-binge" aria-pressed="false">🍿 Auto-Binge</button>
+        </div>
     </div>
-
 </section>
 
+</main>
+
 <!-- ================= FOOTER ================= -->
-<br>
-<footer class="footer" role="contentinfo">
-    <p>&copy; 2026 Ammara Badat. All rights reserved.</p>
+<footer class="footer">
+    <p>&copy; 2026 Ammara Badat. All rights reserved. Show data from <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener">TVMaze</a>.</p>
 </footer>
 
-
-<script src="script.js" defer></script>
+<!-- Order matters: data and helpers first, main.js last. -->
+<script src="js/data/genres.js" defer></script>
+<script src="js/data/questions.js" defer></script>
+<script src="js/data/films.js" defer></script>
+<script src="js/utils.js" defer></script>
+<script src="js/api.js" defer></script>
+<script src="js/cards.js" defer></script>
+<script src="js/favourites.js" defer></script>
+<script src="js/search.js" defer></script>
+<script src="js/game.js" defer></script>
+<script src="js/cinema.js" defer></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>

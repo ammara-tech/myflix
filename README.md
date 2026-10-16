@@ -48,9 +48,33 @@ LocalStorage (Favourites system)
 📁 Project Structure
 myflix/
 │
-├── index.html        # Main layout
-├── style.css         # All UI styling (Netflix-inspired design)
-├── script.js         # App logic (search, game, cinema mode)
+├── index.html            # Main layout
+├── assets/
+│   ├── favicon.svg
+│   └── no-poster.svg     # Shown when a show has no poster
+├── css/
+│   ├── base.css          # Colours, reset, buttons, shared animations
+│   ├── layout.css        # Nav, hero, section cards, footer
+│   ├── carousel.css      # Search Results / My List rows and movie cards
+│   ├── game.css          # Guessing game TV
+│   ├── explore.css       # Genre grid
+│   └── cinema.css        # Cinema mode player
+└── js/
+    ├── data/
+    │   ├── genres.js     # Genre list + TVMaze genre mapping
+    │   ├── questions.js  # Guessing game questions
+    │   └── films.js      # Cinema mode video list
+    ├── utils.js          # Shared helpers (escaping, storage, etc.)
+    ├── api.js            # TVMaze requests
+    ├── cards.js          # Movie card + carousel arrows
+    ├── favourites.js     # My List
+    ├── search.js         # Search + genre filter
+    ├── game.js           # Guessing game
+    ├── cinema.js         # Cinema mode
+    └── main.js           # Starts everything
+
+Scripts are plain `<script defer>` files (not ES modules), so the app
+still works when you double-click index.html. Keep the order in index.html.
 
 🚀 How to Run Locally
 Clone the repository:

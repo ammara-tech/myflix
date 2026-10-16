@@ -1,0 +1,166 @@
+/* ==========================
+   GUESSING GAME (TV)
+========================== */
+
+.hero-tv {
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+    background: #000;
+}
+
+.tv-screen {
+    width: 80%;
+    max-width: 900px;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 2px solid #333;
+    background: #111;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+}
+
+/* top bar is shared with the cinema player */
+.tv-topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--surface);
+}
+
+.tv-logo {
+    font-weight: bold;
+    color: var(--red);
+    letter-spacing: 1px;
+}
+
+.tv-status {
+    color: #666;
+}
+
+.tv-status.on {
+    color: red;
+    animation: blink 1s infinite;
+}
+
+.tv-content {
+    padding: 30px 40px 40px;
+    text-align: center;
+}
+
+.mode-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.mode-btn {
+    padding: 8px 15px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.mode-btn.active {
+    background: var(--red);
+    transform: scale(1.05);
+}
+
+#featured-screen p,
+#game-feedback,
+#score {
+    margin-top: 12px;
+    color: #ccc;
+}
+
+#game-question {
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+#guess-input {
+    width: 60%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #222;
+    color: var(--text);
+}
+
+.game-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.tv-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background: var(--surface);
+}
+
+.tv-controls button {
+    border-radius: 5px;
+}
+
+.hint-btn {
+    background: #b8860b;
+}
+
+.hint-btn:hover:not(:disabled) {
+    background: #d4a017;
+}
+
+/* feedback text */
+.correct { color: #00ff99; font-weight: bold; }
+.wrong   { color: #ff4c4c; font-weight: bold; }
+.hint    { color: #ffd700; font-weight: bold; }
+
+/* ---------- effects ---------- */
+.shake {
+    animation: shake 0.4s ease;
+}
+
+.glitch {
+    animation: glitch 0.5s ease;
+}
+
+.success-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 255, 120, 0.15);
+    pointer-events: none;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes glitch {
+    0%   { filter: hue-rotate(0deg); }
+    50%  { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 768px) {
+    .tv-screen {
+        width: 100%;
+    }
+
+    .tv-content {
+        padding: 24px 16px 30px;
+    }
+
+    #guess-input {
+        width: 100%;
+    }
+}
