@@ -1,0 +1,204 @@
+/* ==========================
+   CAROUSEL ROWS + MOVIE CARDS
+   (Search Results and My List)
+========================== */
+
+.carousel {
+    position: relative;
+}
+
+.row-scroll {
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+    overflow-x: auto;
+    padding: 24px 28px 28px;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    /* fade the left/right edges */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+}
+
+.row-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* empty / loading / error messages inside a row */
+.row-message {
+    width: 100%;
+    padding: 40px 10px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.row-message.error {
+    color: #ff8080;
+}
+
+.row-message.loading {
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, #1a1a1a 25%, #262626 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+}
+
+/* ---------- arrows ---------- */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    z-index: 50;
+    width: 34px;
+    height: 64px;
+    padding: 0;
+    font-size: 24px;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.25s ease, background 0.25s ease;
+}
+
+.scroll-btn:hover:not(:disabled) {
+    background: rgba(229, 9, 20, 0.75);
+}
+
+/* keep the arrow centred when pressed */
+.scroll-btn:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.scroll-btn.left {
+    left: 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.scroll-btn.right {
+    right: 0;
+    border-radius: 6px 0 0 6px;
+}
+
+.carousel:hover .scroll-btn,
+.scroll-btn:focus-visible {
+    opacity: 1;
+}
+
+/* touch screens have no hover, so always show the arrows */
+@media (hover: none) {
+    .scroll-btn {
+        opacity: 0.8;
+    }
+}
+
+/* ---------- movie card ---------- */
+.movie-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 200px;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface);
+    scroll-snap-align: start;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.35s ease,
+                opacity 0.35s ease;
+}
+
+.movie-card img {
+    display: block;
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    background: #1f1f1f;
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.movie-card h3 {
+    padding: 10px 12px 2px;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.movie-card p {
+    padding: 0 12px 10px;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.movie-card button {
+    position: relative;
+    z-index: 3;
+    margin: auto 12px 12px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+.movie-card .remove-btn {
+    background: #333;
+}
+
+.movie-card .remove-btn:hover {
+    background: var(--red);
+}
+
+/* dark gradient overlay on hover */
+.movie-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* spotlight: dim the row, lift the hovered card */
+.row-scroll:hover .movie-card {
+    opacity: 0.5;
+}
+
+.row-scroll .movie-card:hover,
+.row-scroll .movie-card:focus-within {
+    opacity: 1;
+    transform: scale(1.07);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(229, 9, 20, 0.35);
+}
+
+.movie-card:hover::after {
+    opacity: 1;
+}
+
+.movie-card:hover img {
+    transform: scale(1.03);
+    filter: contrast(1.05) brightness(0.95);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 768px) {
+    .movie-card {
+        flex-basis: 150px;
+    }
+
+    .movie-card img {
+        height: 220px;
+    }
+
+    .row-scroll {
+        padding: 18px 16px 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-card {
+        flex-basis: 130px;
+    }
+
+    .movie-card img {
+        height: 190px;
+    }
+}

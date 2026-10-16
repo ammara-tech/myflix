@@ -1,0 +1,198 @@
+/* ==========================
+   LAYOUT: nav, hero, section cards, footer
+========================== */
+
+/* ---------- top nav ---------- */
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 28px;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    color: var(--red);
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+}
+
+.nav-center {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#search-input {
+    width: 320px;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    background: #333;
+    color: var(--text);
+}
+
+#search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.6);
+}
+
+/* ---------- hero ---------- */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 45vh;
+    padding: 40px 0;
+}
+
+.hero-card {
+    width: 90%;
+    max-width: 900px;
+    padding: 50px 30px;
+    text-align: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.12), rgba(0, 0, 0, 0.85));
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+.hero-card h2 {
+    font-size: 2rem;
+    margin: 0 0 10px;
+}
+
+.hero-card p {
+    color: #ccc;
+}
+
+/* ---------- section cards ---------- */
+.netflix-card {
+    position: relative;
+    width: min(1200px, calc(100% - 32px));
+    margin: 35px auto;
+    padding: 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(25, 25, 25, 0.9), rgba(10, 10, 10, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+    transition: box-shadow 0.3s ease;
+}
+
+/* soft red glow on hover */
+.netflix-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at center, rgba(229, 9, 20, 0.06), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.netflix-card:hover::before {
+    opacity: 1;
+}
+
+/* thin red line across the top */
+.netflix-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.6), transparent);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.netflix-card:hover {
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(229, 9, 20, 0.08);
+}
+
+.results-card {
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(12, 12, 12, 0.95));
+}
+
+.mylist-card {
+    background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(5, 5, 5, 0.98));
+    border-color: rgba(229, 9, 20, 0.08);
+}
+
+.mylist-card:hover {
+    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.9), 0 0 30px rgba(229, 9, 20, 0.12);
+}
+
+.card-header {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: #f1f1f1;
+}
+
+/* red accent bar under each card title */
+.card-header h2::after {
+    content: "";
+    display: block;
+    width: 70px;
+    height: 3px;
+    margin-top: 6px;
+    background: linear-gradient(90deg, var(--red), transparent);
+    border-radius: 3px;
+}
+
+/* ---------- footer ---------- */
+.footer {
+    padding: 30px 20px;
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 768px) {
+    .nav {
+        justify-content: center;
+        padding: 14px 16px;
+    }
+
+    .nav-center {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #search-input {
+        flex: 1 1 100%;
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-card {
+        padding: 25px 15px;
+    }
+
+    .hero-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .netflix-card {
+        padding: 16px 12px;
+    }
+}
