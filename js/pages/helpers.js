@@ -115,6 +115,30 @@
         return row;
     }
 
+    // Rows from the member's imported Netflix data (empty rows hide themselves).
+    function netflixRows() {
+        if (!MyFlix.netflix.connected()) return [];
+        const nf = MyFlix.netflix.rows;
+        const sub = t => t.netflix?.lastEpisode || (t.netflix?.lastAt ? `Watched ${new Date(t.netflix.lastAt).toLocaleDateString([], { day: "numeric", month: "short" })}` : "");
+        return [
+            MyFlix.cards.createRow({ title: "Continue Watching on Netflix", variant: "wide", hideIfEmpty: true, load: nf.continueWatching, cardOpts: t => ({ showTitle: true, subtitle: sub(t) }) }),
+            MyFlix.cards.createRow({ title: "My Netflix List", hideIfEmpty: true, lazy: true, load: nf.myList }),
+            MyFlix.cards.createRow({ title: "Watched Recently on Netflix", hideIfEmpty: true, lazy: true, load: nf.recent, cardOpts: t => ({ subtitle: sub(t) }) }),
+            MyFlix.cards.createRow({ title: "Your Netflix Favourites", subtitle: "Titles you gave a thumbs up", hideIfEmpty: true, lazy: true, load: nf.favourites })
+        ];
+    }
+
+    function netflixCta() {
+        const el = document.createElement("section");
+        el.className = "cta-banner";
+        el.innerHTML = `
+            <div class="cta-icon">${icon("link")}</div>
+            <div><h3>Bring in your Netflix</h3><p>See your Netflix List, Continue Watching and history here. No password needed: import the file Netflix lets you download.</p></div>
+            <button type="button" class="btn btn--play">${icon("link")}<span>Connect Netflix</span></button>`;
+        el.querySelector("button").addEventListener("click", () => MyFlix.netflixConnect.open());
+        return el;
+    }
+
     function classicsRow(title = "Free Classic Cinema") {
         return MyFlix.cards.createRow({
             title,
@@ -153,5 +177,5 @@
         return el;
     }
 
-    MyFlix.pageHelpers = { tvHero, classicHero, tvGenre, topTen, onTonight, continueWatching, continueRow, myListRow, becauseRow, classicsRow, tmdbCta, pageHeader };
+    MyFlix.pageHelpers = { netflixRows, netflixCta, tvHero, classicHero, tvGenre, topTen, onTonight, continueWatching, continueRow, myListRow, becauseRow, classicsRow, tmdbCta, pageHeader };
 })(window.MyFlix = window.MyFlix || {});

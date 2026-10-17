@@ -13,10 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
     M.party.init();
     M.mood.init();
     M.settings.init();
+    M.netflixConnect.init();
     M.router.init();
     M.tracker.init();
     M.pwa.init();
 
     // Keep every + / ✓ My List button in sync.
-    M.store.onChange(what => { if (what === "list") M.cards.refreshListButtons(); });
+    M.store.onChange(what => {
+        if (what === "list") M.cards.refreshListButtons();
+        if (what === "netflix" && ["home", "my-list"].includes(M.router.current()?.name)) M.router.refresh();
+    });
 });

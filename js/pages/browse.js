@@ -36,7 +36,7 @@
         const heroEl = hero(view);
         const list = rows(view);
 
-        list.append(H.continueRow(), H.myListRow());
+        list.append(H.continueRow(), ...H.netflixRows(), H.myListRow());
         if (tmdb.enabled()) {
             list.append(C.createRow({ title: "Trending Now", load: () => tmdb.trending("all", "week").then(r => r.map(x => M.fromTmdb(x))) }));
         }

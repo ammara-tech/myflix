@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="css/games.css">
     <link rel="stylesheet" href="css/free.css">
+    <link rel="stylesheet" href="css/netflix.css">
 
     <!-- Runs before the page paints so the saved theme applies immediately. -->
     <script src="js/theme.js"></script>
@@ -75,6 +76,7 @@
                 <a href="#/stats"><svg class="icon"><use href="#i-chart-column"></use></svg><span>Your Stats</span></a>
                 <a href="#/games"><svg class="icon"><use href="#i-gamepad-2"></use></svg><span>Games</span></a>
                 <a href="#/my-list?tab=following"><svg class="icon"><use href="#i-list-checks"></use></svg><span>Episode Tracker</span></a>
+                <button type="button" data-act="netflix"><svg class="icon"><use href="#i-link"></use></svg><span>Connect Netflix</span></button>
                 <button type="button" data-act="party"><svg class="icon"><use href="#i-users"></use></svg><span>Join a Watch Party</span></button>
                 <button type="button" data-act="theme" data-theme-label></button>
                 <button type="button" data-act="install" class="hidden"><svg class="icon"><use href="#i-download"></use></svg><span>Install app</span></button>
@@ -133,6 +135,13 @@
     </div>
 </dialog>
 
+<dialog id="netflix-modal" class="modal modal--small" aria-label="Connect Netflix">
+    <div class="modal-panel">
+        <button type="button" class="modal-close circle" data-act="close" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button>
+        <div class="modal-panel-body settings"></div>
+    </div>
+</dialog>
+
 <dialog id="settings-modal" class="modal modal--small" aria-label="Settings">
     <div class="modal-panel">
         <button type="button" class="modal-close circle" data-act="close" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button>
@@ -163,6 +172,7 @@
 <script src="js/api/jikan.js" defer></script>
 <script src="js/api/trakt.js" defer></script>
 <script src="js/api/fanart.js" defer></script>
+<script src="js/api/netflix.js" defer></script>
 <script src="js/ui/cards.js" defer></script>
 <script src="js/ui/billboard.js" defer></script>
 <script src="js/ui/details.js" defer></script>
@@ -171,6 +181,7 @@
 <script src="js/party.js" defer></script>
 <script src="js/ui/mood.js" defer></script>
 <script src="js/ui/settings.js" defer></script>
+<script src="js/ui/netflixConnect.js" defer></script>
 <script src="js/recommend.js" defer></script>
 <script src="js/tracker.js" defer></script>
 <script src="js/router.js" defer></script>

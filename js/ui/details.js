@@ -23,6 +23,7 @@
         const portrait = !img && (info.poster || t.posterLarge || t.poster);
         const playable = MyFlix.actions.canPlay(t);
         const free = !playable && freeOption(t, info);
+        const onNetflix = MyFlix.netflix.connected() && (t.netflix || MyFlix.netflix.find(t.name));
         const listItem = store.list.get(t.key);
         return `
             <div class="modal-hero ${portrait ? "modal-hero--portrait" : ""}">
@@ -36,6 +37,7 @@
                     <h2 id="modal-title" class="modal-title">${escapeHtml(t.name)}</h2>
                     <div class="modal-actions">
                         ${playable ? `<button type="button" class="btn btn--play" data-act="play">${icon("play")}<span>Play</span></button>` : ""}
+                        ${onNetflix ? `<a class="btn ${playable || free ? "btn--grey" : "btn--play"}" href="${escapeHtml(MyFlix.netflix.watchUrl(t.name))}" target="_blank" rel="noopener">${icon("play")}<span>${onNetflix.lastEpisode || onNetflix.type === "series" ? "Continue on Netflix" : "Watch on Netflix"}</span>${icon("external-link", "btn-out")}</a>` : ""}
                         ${free ? `<a class="btn btn--play" href="${escapeHtml(free.url)}" target="_blank" rel="noopener">${icon("play")}<span>Watch free on ${escapeHtml(free.name)}</span>${icon("external-link", "btn-out")}</a>` : ""}
                         ${info.trailer ? `<button type="button" class="btn ${playable || free ? "btn--grey" : "btn--play"}" data-act="trailer">${icon("circle-play")}<span>Trailer</span></button>` : ""}
                         <button type="button" class="circle circle--lg" data-act="list" data-list-key="${escapeHtml(t.key)}" aria-label="My List">${icon(listItem ? "check" : "plus")}</button>
@@ -81,6 +83,21 @@
         if (subs?.length) rows.push(`<p><span class="label">Subtitles:</span> ${subs.slice(0, 3).map(s => escapeHtml(s.label)).join(", ")}${subs.length > 3 ? ` +${subs.length - 3} more` : ""}</p>`);
         else if (t.kind === "classic") rows.push(`<p><span class="label">Subtitles:</span> Load your own .srt file in the player (CC)</p>`);
         return rows.join("");
+    }
+
+    // "On your Netflix: last watched S2: Episode 3 · 12 Oct"
+    function netflixLine(t) {
+        const n = MyFlix.netflix.connected() && (MyFlix.netflix.find(t.name));
+        if (!n) return "";
+        const bits = [];
+        if (n.lastEpisode) bits.push(`last watched ${escapeHtml(n.lastEpisode)}`);
+        if (n.lastAt) bits.push(new Date(n.lastAt).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }));
+        if (!n.lastAt && n.addedAt !== undefined) bits.push("in your Netflix List");
+        if (n.minutes) bits.push(`${Math.max(1, Math.round(n.minutes / 60))}h watched`);
+        return `<div class="next-episode">${icon("link")}<div>
+            <strong>On your Netflix</strong>
+            <span>${bits.length ? bits.join(" · ") : "Imported from your Netflix data"}</span>
+        </div></div>`;
     }
 
     function nextEpisodeHtml(ep) {
@@ -401,6 +418,7 @@
                     <div>
                         ${metaHtml(t, info)}
                         ${nextEpisodeHtml(info.next)}
+                        ${netflixLine(t)}
                         <p class="modal-overview">${escapeHtml(t.overview || "")}</p>
                     </div>
                     <div class="modal-side">${sideHtml(t, info)}</div>
