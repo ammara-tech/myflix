@@ -14,18 +14,20 @@
         const counts = {
             want: store.list.all().filter(i => i.status === "want").length,
             watched: store.list.all().filter(i => i.status === "watched").length,
-            following: store.episodes.shows().length
+            following: store.episodes.shows().length,
+            netflix: MyFlix.netflix.connected() ? MyFlix.netflix.stats().titles : 0
         };
         view.innerHTML = `
             <div class="page-header"><h1>My List</h1></div>
             <div class="tabs" role="tablist" aria-label="My List">
-                ${[["want", "Want to Watch"], ["watched", "Watched"], ["following", "Episode Tracker"]].map(([k, l]) =>
+                ${[["want", "Want to Watch"], ["watched", "Watched"], ["following", "Episode Tracker"], ["netflix", "Netflix"]].map(([k, l]) =>
                     `<a role="tab" href="#/my-list?tab=${k}" class="tab ${tab === k ? "is-on" : ""}" aria-selected="${tab === k}">${l}<span class="count">${counts[k]}</span></a>`).join("")}
             </div>
             <div class="tab-panel" role="tabpanel"></div>`;
         const panel = view.querySelector(".tab-panel");
 
         if (tab === "following") return renderFollowing(panel);
+        if (tab === "netflix") return renderNetflix(panel);
 
         const items = store.list.all().filter(i => i.status === tab).sort((a, b) => (b.watchedAt || b.addedAt) - (a.watchedAt || a.addedAt));
         if (!items.length) {
@@ -105,6 +107,25 @@
             });
             ul.appendChild(li);
         });
+    }
+
+    function renderNetflix(panel) {
+        if (!MyFlix.netflix.connected()) {
+            panel.appendChild(MyFlix.pageHelpers.netflixCta());
+            return;
+        }
+        const s = MyFlix.netflix.stats();
+        const d = MyFlix.netflix.data();
+        const head = document.createElement("div");
+        head.className = "page-header";
+        head.innerHTML = `
+            <p class="muted">${d.profile ? `Profile ${escapeHtml(d.profile)} · ` : ""}${s.titles} titles · ${s.hours} hours since ${new Date(s.since).getFullYear() || "—"} · imported ${new Date(d.importedAt).toLocaleDateString()}</p>
+            <button type="button" class="btn btn--small btn--grey">${icon("refresh-cw")}<span>Update or disconnect</span></button>`;
+        head.querySelector("button").addEventListener("click", () => MyFlix.netflixConnect.open());
+        const rows = document.createElement("div");
+        rows.className = "rows";
+        rows.append(...MyFlix.pageHelpers.netflixRows());
+        panel.append(head, rows);
     }
 
     function emptyState(iconName, title, text) {
@@ -216,6 +237,7 @@
                     ${tile("eye", s.watchedTitles, "titles finished")}
                     ${tile("star", s.avgRating ? s.avgRating.toFixed(1) : "–", "average rating you give")}
                     ${tile("trophy", s.bestScore, "best game score")}
+                    ${MyFlix.netflix.connected() ? tile("link", MyFlix.netflix.stats().hours, "hours on Netflix") : ""}
                 </div>
                 <section class="stat-card">
                     <h2>Top genres</h2>

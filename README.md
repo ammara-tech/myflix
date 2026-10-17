@@ -88,6 +88,18 @@ MYFLIX recreates the feel of a modern streaming service in the browser, with no 
 - "Did you know?" facts from Wikipedia, and "More like this"
 
 ### Personal
+- **Connect Netflix**:
+  - **How it works:** Netflix has no public API, so MYFLIX never asks for a Netflix password. You import the data file Netflix lets you download instead:
+    - **Quick:** *Viewing activity → Download all*, which gives `NetflixViewingHistory.csv`
+    - **Full:** *Download your personal information*, a `.zip` that MYFLIX reads in the browser, with no need to unzip
+  - **What you get:**
+    - Rows on Home: **Continue Watching on Netflix**, **My Netflix List**, **Watched Recently on Netflix** and **Your Netflix Favourites**
+    - An "On your Netflix" note and a **Continue on Netflix** button in More Info
+    - A Netflix tab on My List and a Netflix hours tile on Stats
+  - **Options:**
+    - For multi-profile downloads, pick your profile
+    - Optionally copy your Netflix List into My List
+    - The data stays in the browser, and **Disconnect** removes it
 - **My List**: Want to Watch and Watched tabs, with 1–5 star ratings
 - **Episode tracker**:
   - Tick off episodes, and "Continue Watching" shows your next one
@@ -186,7 +198,8 @@ myflix/
 │   ├── player.css          Full-screen player, watch party
 │   ├── pages.css           Theatre, services directory, My List, stats
 │   ├── games.css           Games page
-│   └── free.css            Watch Free tabs, TV show pages, Retro TV
+│   ├── free.css            Watch Free tabs, TV show pages, Retro TV
+│   └── netflix.css         Connect Netflix window
 └── js/
     ├── theme.js            Light/dark theme (loaded first)
     ├── config.js           Optional keys and region
@@ -195,8 +208,8 @@ myflix/
     ├── utils.js            Helpers: escaping, caching, formatting, toast
     ├── store.js            Saved data: list, episodes, progress, history, settings
     ├── models.js           Normalises TVMaze / TMDB / classic titles
-    ├── api/                tvmaze · tmdb · omdb · wiki · archive · anilist · jikan · trakt · fanart
-    ├── ui/                 cards · billboard · details · player · mood · settings
+    ├── api/                tvmaze · tmdb · omdb · wiki · archive · anilist · jikan · trakt · fanart · netflix (import)
+    ├── ui/                 cards · billboard · details · player · subtitles · mood · settings · netflixConnect
     ├── pages/              helpers · browse · free (Watch Free tabs) · retro · anime · library · games
     ├── party.js            Watch party
     ├── recommend.js        Recommendations

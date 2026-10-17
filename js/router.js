@@ -115,6 +115,7 @@
                     settings: () => MyFlix.settings.open(),
                     theme: () => MyFlix.theme.toggle(),
                     party: () => MyFlix.party.joinFromLink(""),
+                    netflix: () => MyFlix.netflixConnect.open(),
                     install: () => MyFlix.pwa.install()
                 })[b.dataset.act]?.();
             });

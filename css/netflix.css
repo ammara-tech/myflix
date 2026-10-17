@@ -1,0 +1,94 @@
+/* ==========================
+   CONNECT NETFLIX (new elements only; uses existing tokens)
+========================== */
+
+.nf-steps {
+    display: grid;
+    gap: 4px;
+    padding-left: 20px;
+    list-style: decimal;
+    font-size: 0.9rem;
+    color: var(--text-2);
+}
+
+.nf-steps code {
+    font-size: 0.85em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--surface-2);
+}
+
+.nf-drop {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 26px 16px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nf-drop .icon {
+    width: 30px;
+    height: 30px;
+    color: var(--text-muted);
+}
+
+.nf-drop:hover,
+.nf-drop:focus-visible,
+.nf-drop.is-over {
+    border-color: var(--text);
+    background: var(--surface);
+}
+
+.nf-connected label .icon {
+    color: var(--green);
+}
+
+.nf-profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 14px;
+}
+
+.nf-profile {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+}
+
+.nf-profile .avatar {
+    width: 84px;
+    height: 84px;
+    font-size: 2rem;
+    border: 3px solid transparent;
+    transition: border-color 0.15s ease;
+}
+
+.nf-profile:hover,
+.nf-profile:focus-visible {
+    color: var(--text);
+}
+
+.nf-profile:hover .avatar,
+.nf-profile:focus-visible .avatar {
+    border-color: var(--text);
+}
+
+.nf-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500 !important;
+}
+
+.nf-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--red);
+}

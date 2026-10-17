@@ -35,6 +35,10 @@
                 <p class="muted">Shown to friends in watch parties.</p>
                 <input id="set-name" type="text" maxlength="20" value="${escapeHtml(store.getSetting("name"))}" placeholder="Your name">
             </div>
+            <div class="setting setting--row">
+                <div><label>Netflix</label><p class="muted">${MyFlix.netflix.connected() ? `Connected · ${MyFlix.netflix.stats().titles} titles imported` : "Show your Netflix List and Continue Watching here, by importing your Netflix data download."}</p></div>
+                <button type="button" class="btn btn--small btn--grey" data-act="netflix">${icon("link")}<span>${MyFlix.netflix.connected() ? "Manage" : "Connect"}</span></button>
+            </div>
             ${keyField("tmdbKey", "TMDB", "Unlocks the Movies page, trailers, backdrops and “Where to watch”.", "https://www.themoviedb.org/settings/api", MyFlix.tmdb.enabled())}
             ${keyField("omdbKey", "OMDb", "Adds IMDb, Rotten Tomatoes and Metacritic scores.", "https://www.omdbapi.com/apikey.aspx", MyFlix.omdb.enabled())}
             ${keyField("traktKey", "Trakt", "Adds “Trending Today” rows showing what people are watching right now. Create an app, then paste its Client ID.", "https://trakt.tv/oauth/applications/new", MyFlix.trakt.enabled())}
@@ -97,6 +101,7 @@
                 MyFlix.router.refresh();
             }
             if (b.dataset.act === "close") dialog.close();
+            if (b.dataset.act === "netflix") { dialog.close(); MyFlix.netflixConnect.open(); }
             if (b.dataset.act === "theme") { MyFlix.theme.toggle(); render(); }
             if (b.dataset.act === "reset" && confirm("Reset everything on this device? This can't be undone.")) store.resetAll();
         });

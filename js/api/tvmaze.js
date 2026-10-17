@@ -12,6 +12,16 @@
         return data.map(d => d.show);
     }
 
+    // The single best match for a show name (or null).
+    async function singleSearch(name) {
+        try {
+            return await getJson(`${BASE}/singlesearch/shows?q=${encodeURIComponent(name)}`);
+        } catch (err) {
+            if (err.status === 404) return null;
+            throw err;
+        }
+    }
+
     // ~500 popular shows (two index pages), best rated first.
     function catalog() {
         if (!catalogPromise) {
@@ -65,5 +75,5 @@
         return bg?.resolutions?.original?.url || null;
     }
 
-    MyFlix.tvmaze = { search, catalog, show, seasonEpisodes, showEpisodes, lookupImdb, schedule, backdropOf };
+    MyFlix.tvmaze = { search, singleSearch, catalog, show, seasonEpisodes, showEpisodes, lookupImdb, schedule, backdropOf };
 })(window.MyFlix = window.MyFlix || {});
